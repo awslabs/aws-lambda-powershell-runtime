@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: powershell-layer-Demo-AWS.Tools
+##########################################################################
+#  Parameters & Globals                                                  #
+##########################################################################
+Globals:
+  Function:
+    Tracing: Active
+    Tags:
+      Application: powershell-layer-Demo-AWS.Tools
+Resources:
+##########################################################################
+#  Lambda layers                                                         #
+##########################################################################
+  DemoAWSToolsLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      Description: Layer containing Demo-AWS.Tools
+      ContentUri: Demo-AWS.Tools
+      CompatibleRuntimes:
+        - provided.al2      
+      RetentionPolicy: Delete
+    Metadata:
+      BuildMethod: makefile
+  DemoAWSToolsParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: lambda-powershell-DemoAWSTools-latest-version-arn
+      Description: DemoAWSTools Layer Name
+      Type: String
+      Value: !Ref DemoAWSToolsLayer
+
+##########################################################################
+#  OUTPUTS                                                               #
+##########################################################################
+Outputs:
+  DemoAWSToolsLayer:
+    Value: !Ref DemoAWSToolsLayer
+    Description: DemoAWSToolsLayer Layer ARN

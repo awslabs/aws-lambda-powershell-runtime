@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: powershell-layer-AWSTools.All
+##########################################################################
+#  Parameters & Globals                                                  #
+##########################################################################
+Globals:
+  Function:
+    Tracing: Active
+    Tags:
+      Application: powershell-layer-AWSTools.All
+Resources:
+##########################################################################
+#  Lambda layers                                                         #
+##########################################################################
+  AWSToolsAllLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      Description: Layer containing AWSTools.All
+      ContentUri: AWS.Tools.All
+      CompatibleRuntimes:
+        - provided.al2      
+      RetentionPolicy: Delete
+    Metadata:
+      BuildMethod: makefile
+  AWSToolsAllParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: lambda-powershell-AWSToolsAll-latest-version-arn
+      Description: AWSToolsAll Layer Name
+      Type: String
+      Value: !Ref AWSToolsAllLayer
+
+##########################################################################
+#  OUTPUTS                                                               #
+##########################################################################
+Outputs:
+  AWSToolsAllLayer:
+    Value: !Ref AWSToolsAllLayer
+    Description: AWSToolsAllLayer Layer ARN

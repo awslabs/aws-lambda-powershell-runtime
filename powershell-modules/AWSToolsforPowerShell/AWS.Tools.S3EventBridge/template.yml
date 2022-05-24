@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: powershell-layer-AWSTools.S3EventBridge
+##########################################################################
+#  Parameters & Globals                                                  #
+##########################################################################
+Globals:
+  Function:
+    Tracing: Active
+    Tags:
+      Application: powershell-layer-AWSTools.S3EventBridge
+Resources:
+##########################################################################
+#  Lambda layers                                                         #
+##########################################################################
+  AWSToolsS3EventBridgeLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      Description: Layer containing AWSTools.S3EventBridge
+      ContentUri: AWS.Tools.S3EventBridge
+      CompatibleRuntimes:
+        - provided.al2      
+      RetentionPolicy: Delete
+    Metadata:
+      BuildMethod: makefile
+  AWSToolsS3EventBridgeParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: lambda-powershell-AWSToolsS3EventBridge-latest-version-arn
+      Description: AWSToolsS3EventBridge Layer Name
+      Type: String
+      Value: !Ref AWSToolsS3EventBridgeLayer
+
+##########################################################################
+#  OUTPUTS                                                               #
+##########################################################################
+Outputs:
+  AWSToolsS3EventBridgeLayer:
+    Value: !Ref AWSToolsS3EventBridgeLayer
+    Description: AWSToolsS3EventBridgeLayer Layer ARN

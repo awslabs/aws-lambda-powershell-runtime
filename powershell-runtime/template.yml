@@ -1,0 +1,41 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: aws-lambda-powershell-runtime
+##########################################################################
+#  Globals & Parameters                                                  #
+##########################################################################
+Globals:
+  Function:
+    Tracing: Active
+    Tags:
+      Application: aws-lambda-powershell-runtime
+
+Resources:
+##########################################################################
+#  Lambda layers                                                         #
+##########################################################################
+  PwshRuntimeLayer: 
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      Description: Lambda Layer containing PowerShell
+      ContentUri: .
+      CompatibleRuntimes:
+        - provided.al2
+      RetentionPolicy: Delete
+    Metadata:
+      BuildMethod: makefile
+  PwshRuntimeParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: lambda-powershell-runtime-latest-version-arn
+      Description: PwshRuntime Layer Name
+      Type: String
+      Value: !Ref PwshRuntimeLayer
+
+##########################################################################
+#  OUTPUTS                                                               #
+##########################################################################
+Outputs:
+  PwshRuntimeLayer:
+    Value: !Ref PwshRuntimeLayer
+    Description: PwshRuntimeLayer Layer ARN
