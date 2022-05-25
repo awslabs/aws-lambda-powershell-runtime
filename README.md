@@ -17,7 +17,7 @@ The runtime uses Lambda's [custom runtime](https://docs.aws.amazon.com/lambda/la
   *  The function runtime environment matches a standard PowerShell session, which simplifies the development and testing process.
   * No compilation step required and no hosting on the .NET runtime.
   * Allows additional functionality, such as `Add-Type` to provide richer context information. 
-  * 
+
 * **Code visibility.** You can now also view and edit PowerShell code within the Lambda console's built-in [code editor](https://docs.aws.amazon.com/lambda/latest/dg/foundation-console.html#code-editor). You can embed PowerShell code within an [AWS CloudFormation](https://aws.amazon.com/cloudformation/) template, or other infrastructure as code tools.
 * **Output**. This custom runtime returns everything placed on the pipeline as the function output, including the output of `Write-Output`.This gives you more control over the function output, error messages, and logging. With the previous .NET runtime implementation, your function returns only the last output from the PowerShell pipeline. Unhandled exceptions are caught by the runtime, then they are logged to the log stream and a error result is returned to the caller. 
 
