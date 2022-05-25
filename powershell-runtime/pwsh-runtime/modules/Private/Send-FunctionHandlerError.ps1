@@ -17,10 +17,9 @@ function private:Send-FunctionHandlerError
     (
         [Parameter(Mandatory)] $private:InvocationError
     )
-    If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {$VerbosePreference = "continue"}
-    Write-Verbose "[RUNTIME-Send-FunctionHandlerError]Start: Send-FunctionHandlerError"
+    If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-Send-FunctionHandlerError]Start: Send-FunctionHandlerError"}
 
-    Write-Verbose "[RUNTIME-Send-FunctionHandlerError]Create POST request to Runtime Error API"
+    If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-Send-FunctionHandlerError]Create POST request to Runtime Error API"}
     $private:responseUri = "http://$env:AWS_LAMBDA_RUNTIME_API/2018-06-01/runtime/invocation/$env:AWS_LAMBDA_RUNTIME_AWS_REQUEST_ID/error"
     $private:responseRequest = [System.Net.WebRequest]::Create($private:responseUri)
     $private:responseRequest.Headers.Add("User-Agent", "aws-lambda-powershell/" + $env:POWERSHELL_VERSION)
@@ -28,13 +27,13 @@ function private:Send-FunctionHandlerError
 
     Write-Host $private:InvocationError
 
-    Write-Verbose "[RUNTIME-Send-FunctionHandlerError]Create response error object"
+    If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-Send-FunctionHandlerError]Create response error object"}
     $private:responseErrorBody = ConvertTo-Json -Compress -InputObject @{
         errorMessage = $private:InvocationError.Exception.Message
         errorType    = $private:InvocationError.CategoryInfo.Reason
     }
 
-    Write-Verbose "[RUNTIME-Send-FunctionHandlerError]Send response error object"
+    If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-Send-FunctionHandlerError]Send response error object"}
     $private:responseStream = $private:responseRequest.GetRequestStream()
     $private:responseByteArray = [System.Text.Encoding]::UTF8.GetBytes($private:responseErrorBody)
     $private:responseStream.Write($private:responseByteArray, 0, $private:responseByteArray.Length)

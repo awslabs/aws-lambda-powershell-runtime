@@ -20,18 +20,17 @@ function private:Set-HandlerEnvironmentVariables
     (
         [Parameter(Mandatory)] $Headers
     )
-    If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {$VerbosePreference = "continue"}
-    Write-Verbose "[RUNTIME-Set-HandlerEnvironmentVariables]Start: Set-HandlerEnvironmentVariables"
-    Write-Verbose "[RUNTIME-Set-HandlerEnvironmentVariables]Received Headers: $($Headers)"
+    If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-Set-HandlerEnvironmentVariables]Start: Set-HandlerEnvironmentVariables"}
+    If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-Set-HandlerEnvironmentVariables]Received Headers: $($Headers)"}
 
     # Set default TEMP environment variables for each invocation to ensure they're "clean" for each handler invocation
-    Write-Verbose "[RUNTIME-Set-HandlerEnvironmentVariables]Set default TEMP environment variables"
+    If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-Set-HandlerEnvironmentVariables]Set default TEMP environment variables"}
     $env:TEMP = '/tmp'
     $env:TMP = '/tmp'
     $env:TMPDIR = '/tmp'
 
     # Set AWS Lambda specific environment variables
-    Write-Verbose "[RUNTIME-Set-HandlerEnvironmentVariables]Set AWS Lambda specific environment variables"
+    If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-Set-HandlerEnvironmentVariables]Set AWS Lambda specific environment variables"}
     $env:AWS_LAMBDA_RUNTIME_AWS_REQUEST_ID = $Headers['Lambda-Runtime-Aws-Request-Id']
     $env:AWS_LAMBDA_RUNTIME_CLIENT_CONTEXT = $Headers['Lambda-Runtime-Client-Context']
     $env:AWS_LAMBDA_RUNTIME_COGNITO_IDENTITY = $Headers['Lambda-Runtime-Cognito-Identity']

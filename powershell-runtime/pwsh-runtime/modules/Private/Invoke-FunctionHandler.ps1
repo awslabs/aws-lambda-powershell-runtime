@@ -19,8 +19,7 @@ function private:Invoke-FunctionHandler
         [Parameter(Mandatory)] $private:HandlerArray,
         [Parameter(Mandatory)] $private:LambdaContext
     )
-    If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {$VerbosePreference = "continue"}
-    Write-Verbose "[RUNTIME-Invoke-FunctionHandler]Start: Invoke-FunctionHandler"
+    If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-Invoke-FunctionHandler]Start: Invoke-FunctionHandler"}
 
     $private:LambdaInput = ConvertFrom-Json -InputObject $private:runtimeNextInvocationResponse.incomingEvent
     switch ($private:HandlerArray.handlerType) {

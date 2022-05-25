@@ -9,15 +9,14 @@ function Private:Set-LambdaContext
     .DESCRIPTION
     Captures the content of the provided Lambda Context variable.
     #>
-    If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {$VerbosePreference = "continue"}
-    Write-Verbose "[RUNTIME-Set-LambdaContext]Start: Set-LambdaContext"
+    If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-Set-LambdaContext]Start: Set-LambdaContext"}
 
     # Importing .NET class from .cs file to support the script property "RemainingTime" and method "getRemainingTimeInMillis".
     # This is taken from the Lambda .Net runtime LambdaContext code: https://github.com/aws/aws-lambda-dotnet/blob/master/Libraries/src/Amazon.Lambda.Core/ILambdaContext.cs
-    Write-Verbose "[RUNTIME-Set-LambdaContext]Importing .NET class from .cs file to support script properties and method"
+    If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-Set-LambdaContext]Importing .NET class from .cs file to support script properties and method"}
     Add-Type -TypeDefinition ([System.IO.File]::ReadAllText('/opt/PowerShellLambdaContext.cs'))
 
-    Write-Verbose "[RUNTIME-Set-LambdaContext]Creating LambdaContext"
+    If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-Set-LambdaContext]Creating LambdaContext"}
     $private:LambdaContext = [Amazon.Lambda.PowerShell.Internal.LambdaContext]::new(
         $env:AWS_LAMBDA_FUNCTION_NAME,
         $env:AWS_LAMBDA_FUNCTION_VERSION,
@@ -30,6 +29,6 @@ function Private:Set-LambdaContext
         $env:AWS_LAMBDA_RUNTIME_CLIENT_CONTEXT,
         [double]$env:AWS_LAMBDA_RUNTIME_DEADLINE_MS
     )
-    Write-Verbose "[RUNTIME-Set-LambdaContext]return LambdaContext: $($private:LambdaContext)"
+    If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-Set-LambdaContext]return LambdaContext: $($private:LambdaContext)"}
     return $private:LambdaContext
 }

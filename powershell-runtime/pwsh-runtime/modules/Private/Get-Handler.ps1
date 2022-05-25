@@ -21,8 +21,7 @@ function private:Get-Handler
         [String]
         $handler = $env:_HANDLER
     )
-    If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {$VerbosePreference = "continue"}
-    Write-Verbose "[RUNTIME-Get-Handler]Start: Get-Handler"
+    If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-Get-Handler]Start: Get-Handler"}
 
     enum HandlerType {
         Script
@@ -30,25 +29,25 @@ function private:Get-Handler
         Module
     }
 
-    Write-Verbose "[RUNTIME-Get-Handler]Split _HANDLER environment variable"
+    If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-Get-Handler]Split _HANDLER environment variable"}
     $private:handlerArray = $handler.Split('::')
 
     if ($private:handlerArray[0] -like '*.ps1' -and $private:handlerArray.Count -eq 1) {
         # Handler contains only a script file
-        Write-Verbose "[RUNTIME-Get-Handler]Handler contains only a script file"
+        If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-Get-Handler]Handler contains only a script file"}
 
         $private:handlerObject = @{
             handlerType = [HandlerType]::Script
             scriptFileName = $private:handlerArray[0]
             scriptFilePath = [System.IO.Path]::Combine($env:LAMBDA_TASK_ROOT, $private:handlerArray[0])
         }
-        Write-Verbose "[RUNTIME-Get-Handler]Handler type set to: $($private:handlerObject.handlerType)"
-        Write-Verbose "[RUNTIME-Get-Handler]Handler set to PowerShell script name: $($private:handlerObject.scriptFileName)"
+        If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-Get-Handler]Handler type set to: $($private:handlerObject.handlerType)"}
+        If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-Get-Handler]Handler set to PowerShell script name: $($private:handlerObject.scriptFileName)"}
     }
 
     elseif ($private:handlerArray[0] -like '*.ps1' -and $private:handlerArray.Count -eq 2) {
         # Handler contains a script file and handler function name
-        Write-Verbose "[RUNTIME-Get-Handler]Handler contains a script file and handler function name"
+        If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-Get-Handler]Handler contains a script file and handler function name"}
 
         $private:handlerObject = @{
             handlerType = [HandlerType]::Function
@@ -57,31 +56,31 @@ function private:Get-Handler
             functionName = $private:handlerArray[1]
         }
 
-        Write-Verbose "[RUNTIME-Get-Handler]Handler type set to: $($private:handlerObject.handlerType)"
-        Write-Verbose "[RUNTIME-Get-Handler]Script file set to PowerShell script name: $($private:handlerObject.scriptFileName)"
-        Write-Verbose "[RUNTIME-Get-Handler]Handler set to PowerShell function: $($private:handlerObject.functionName)"
+        If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-Get-Handler]Handler type set to: $($private:handlerObject.handlerType)"}
+        If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-Get-Handler]Script file set to PowerShell script name: $($private:handlerObject.scriptFileName)"}
+        If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-Get-Handler]Handler set to PowerShell function: $($private:handlerObject.functionName)"}
 
     }
     elseif ($private:handlerArray[0] -eq 'Module' -and $private:handlerArray.Count -eq 3) {
         # Handler contains a module name and handler function name
-        Write-Verbose "[RUNTIME-Get-Handler]Handler contains a module name and handler function name"
+        If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-Get-Handler]Handler contains a module name and handler function name"}
 
         $private:handlerObject = @{
             handlerType = [HandlerType]::Module
             moduleName = $private:handlerArray[1]
             functionName = $private:handlerArray[2]
         }
-        Write-Verbose "[RUNTIME-Get-Handler]Handler type set to: $($private:handlerObject.handlerType)"
-        Write-Verbose "[RUNTIME-Get-Handler]Module name set to PowerShell module: $($private:handlerObject.moduleName)"
-        Write-Verbose "[RUNTIME-Get-Handler]Handler set to PowerShell function: $($private:handlerObject.functionName)"
+        If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-Get-Handler]Handler type set to: $($private:handlerObject.handlerType)"}
+        If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-Get-Handler]Module name set to PowerShell module: $($private:handlerObject.moduleName)"}
+        If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-Get-Handler]Handler set to PowerShell function: $($private:handlerObject.functionName)"}
 
     }
     # Unable to parse Handler object
     else { 
-        Write-Verbose "[RUNTIME-Get-Handler]Unable to parse Handler object"
+        If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-Get-Handler]Unable to parse Handler object"}
         throw ('Invalid Lambda Handler: {0}' -f $handler)
     }
  
-    Write-Verbose "[RUNTIME-Get-Handler]Return handlerObject"
+    If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-Get-Handler]Return handlerObject"}
     return [pscustomobject]$private:handlerObject
 }
