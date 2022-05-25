@@ -119,7 +119,7 @@ $Response = Invoke-LMFunction -FunctionName aws-lambda-powershell-runtime-PowerS
 [System.IO.StreamReader]::new($Response.Payload).ReadToEnd()
 
 ````
-This outputs the result of ````AWS-GetRegion```
+This outputs the result of `AWS-GetRegion`
 
 ## Cleanup
 
