@@ -1,25 +1,29 @@
 # PowerShell Runtime for AWS Lambda
 
-This runtime makes it easy to run [AWS Lambda](https://aws.amazon.com/lambda/) functions written in [PowerShell](https://docs.microsoft.com/en-us/powershell/scripting/overview).
+This new [PowerShell](https://docs.microsoft.com/en-us/powershell/scripting/overview) custom runtime for [AWS Lambda](https://aws.amazon.com/lambda/) makes it even easier to run Lambda functions written in PowerShell to process events.
 
-This solutions provides a custom runtime to run your native PowerShell code in Lambda to process events. Your code runs in an Amazon Linux environment that includes AWS credentials from an [AWS Identity and Access Management (IAM)](https://aws.amazon.com/iam/) role that you manage.
+Your code runs in an Amazon Linux environment that includes AWS credentials from an [AWS Identity and Access Management (IAM)](https://aws.amazon.com/iam/) role that you manage.
 
 ## Overview
-Previously, running PowerShell on Lambda used the .NET Core runtime [implementation for PowerShell](https://docs.aws.amazon.com/lambda/latest/dg/lambda-powershell.html) which required compiling the PowerShell code into C# binaries to run on .NET. This runtime implements a number of changes from the existing Lambda .NET Core implementation which include:
+Lambda has supported running PowerShell since 2018. Howeveer, this existing solution uses the .NET Core runtime [implementation for PowerShell](https://docs.aws.amazon.com/lambda/latest/dg/lambda-powershell.html). It uses the additional [AWSLambdaPSCore](https://www.powershellgallery.com/packages/AWSLambdaPSCore/3.0.1.0) modules for deployment and publishing, which require compiling the PowerShell code into C# binaries to run on .NET. This adds additional steps to the development process.
 
-* **Native PowerShell.** This runtime uses native PowerShell, rather than a compiled .NET hosted PowerShell runtime. The runtime is built using the Lambda [custom runtime](https://docs.aws.amazon.com/lambda/latest/dg/runtimes-custom.html) functionality using the ```provided.al2```runtime.
-  * The function execution environment matches a standard PowerShell session, which simplifies development and testing.
-  * No compilation step required
-  * More control over function output, error messages, and logging.
-  * Allows additional functionality, such as ```Add-Type``` to provide richer context information. 
-* **Code visibility.** The PowerShell code is visible, and you can directly edit the code within the AWS Management Console's built-in [code editor](https://docs.aws.amazon.com/lambda/latest/dg/foundation-console.html#code-editor). PowerShell code can also be embedded within an [AWS CloudFormation](https://aws.amazon.com/cloudformation/) template.
-* **Output**. The Lambda function returns everything placed on the pipeline as the function output. The previous .NET implementation only  returned the last item in the pipeline. Unhandled exceptions are caught by the runtime, then they are logged to the log stream and a error result is returned to the caller. 
+The runtime uses Lambda's [custom runtime](https://docs.aws.amazon.com/lambda/latest/dg/runtimes-custom.html) functionality based on the `provided.al2` runtime.
 
-* **Handler.** The Lambda function *handler* follows a more Python- or Node-like experience which maps more closely to native PowerShell.
+
+## PowerShell custom runtime benefits
+
+
+* **Native PowerShell.** This new runtime uses native PowerShell.
+  *  The function runtime environment matches a standard PowerShell session, which simplifies the development and testing process.
+  * No compilation step required and no hosting on the .NET runtime.
+  * Allows additional functionality, such as `Add-Type` to provide richer context information. 
+  * 
+* **Code visibility.** You can now also view and edit PowerShell code within the Lambda console's built-in [code editor](https://docs.aws.amazon.com/lambda/latest/dg/foundation-console.html#code-editor). You can embed PowerShell code within an [AWS CloudFormation](https://aws.amazon.com/cloudformation/) template, or other infrastructure as code tools.
+* **Output**. This custom runtime returns everything placed on the pipeline as the function output, including the output of `Write-Output`.This gives you more control over the function output, error messages, and logging. With the previous .NET runtime implementation, your function returns only the last output from the PowerShell pipeline. Unhandled exceptions are caught by the runtime, then they are logged to the log stream and a error result is returned to the caller. 
 
 ## Building, deploying, and invoking PowerShell Lambda functions
 
-There are multiple ways of building this runtime: manually with the [AWS Command Line Interface (AWS CLI)](https://aws.amazon.com/cli/), or with infrastructure as code tools such as [AWS CloudFormation](https://aws.amazon.com/cloudformation/), [AWS Serverless Application Model (AWS SAM)](https://aws.amazon.com/serverless/sam/), [Serverless Framework](https://serverless.com/framework/), and [AWS Cloud Development Kit (AWS CDK)](https://aws.amazon.com/cdk/).
+You can build the custom runtime using a number of tools, including the the [AWS Command Line Interface (AWS CLI)](https://aws.amazon.com/cli/), or with infrastructure as code tools such as [AWS CloudFormation](https://aws.amazon.com/cloudformation/), [AWS Serverless Application Model (AWS SAM)](https://aws.amazon.com/serverless/sam/), [Serverless Framework](https://serverless.com/framework/), and [AWS Cloud Development Kit (AWS CDK)](https://aws.amazon.com/cdk/).
 
 Deploy the example [demo-runtime-layer-function](examples/demo-runtime-layer-function/) to explore how the runtime and PowerShell function work.
 
@@ -31,22 +35,22 @@ Contains a number of PowerShell modules you can build and add to your functions.
 | Module   | Description  |
 |:---|:---|
 |[AWSToolsforPowerShell](powershell-modules/AWSToolsforPowerShell/)|AWS Tools for PowerShell |
-|[VMwarePowerCLI](powershell-mocules/VMwarePowerCLI/)|VMware PowerCLI|
 
-### [Examples](examples/)
+
+### [Examples folder](examples/)
 Contains a number of demo applications to show the PowerShell runtime functionality.
+
+Initial demo application [demo-runtime-layer-function](examples/demo-runtime-layer-function/) uses AWS SAM to deploy the following:
+1. PowerShell custom runtime based on ````provided.al2```` as a Lambda layer.
+2. Additional Lambda layer including the [AWSTools for PowerShell](https://aws.amazon.com/powershell/) with the following module.
+    * ````AWS.Tools.Common````
+3. Both layers store their Amazon Resource Names (ARNs) as parameters in [AWS Systems Manager Parameter Store](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html) which can be referenced in other templates
+
+4. Lambda function with three different handler options.
 
 | Example   | Description  |
 |:---|:---|
 |[demo-runtime-layer-function](examples/demo-runtime-layer-function/)|All-in-one Powershell runtime layer, AWS Tools for PowerShell layer, Lambda function with all three handler options |
-|[powershell-function](powershell-function/)| Lambda function that uses previously deployed Powershell runtime from [powershell-runtime](powershell-runtime/).|
-
-The demo application [demo-runtime-layer-function](examples/demo-runtime-layer-function/) uses AWS SAM to deploy the following:
-1. PowerShell custom runtime based on ````provided.al2```` as a Lambda layer.
-2. Lambda layer including select modules from [AWSTools for PowerShell](https://aws.amazon.com/powershell/).
-    * ````AWS.Tools.Common````
-    * ````AWS.Tools.S3````
-3. Lambda function with three different handler options.
 
 ## Powershell runtime information
 See the [PowerShell-runtime](powershell-runtime/) page for more information on how the runtime works, including:

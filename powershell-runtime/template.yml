@@ -4,12 +4,6 @@ Description: aws-lambda-powershell-runtime
 ##########################################################################
 #  Globals & Parameters                                                  #
 ##########################################################################
-Globals:
-  Function:
-    Tracing: Active
-    Tags:
-      Application: aws-lambda-powershell-runtime
-
 Resources:
 ##########################################################################
 #  Lambda layers                                                         #
@@ -24,13 +18,14 @@ Resources:
       RetentionPolicy: Delete
     Metadata:
       BuildMethod: makefile
-  PwshRuntimeParameter:
-    Type: AWS::SSM::Parameter
-    Properties:
-      Name: lambda-powershell-runtime-latest-version-arn
-      Description: PwshRuntime Layer Name
-      Type: String
-      Value: !Ref PwshRuntimeLayer
+# Optional AWS Systems Manager Parameter Store to store Layer ARN for referencing in further templates.
+#  PwshRuntimeParameter:
+#    Type: AWS::SSM::Parameter
+#    Properties:
+#      Name: lambda-powershell-runtime-latest-version-arn
+#      Description: PwshRuntime Layer Name
+#      Type: String
+#      Value: !Ref PwshRuntimeLayer
 
 ##########################################################################
 #  OUTPUTS                                                               #

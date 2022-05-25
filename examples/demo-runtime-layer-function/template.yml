@@ -13,7 +13,7 @@ Resources:
 ##########################################################################
 #  Lambda functions                                                      #
 ##########################################################################
-  PowerShellFunction:
+  DemoPowerShellFunction:
     Type: AWS::Serverless::Function
     Properties:
       Description: PowerShell-Lambda-Runtime Demo Function
@@ -40,10 +40,10 @@ Resources:
       RetentionPolicy: Delete
     Metadata:
       BuildMethod: makefile
-  PwshRuntimeParameter:
+  DemoPwshRuntimeParameter:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: lambda-powershell-runtime-latest-version-arn
+      Name: demo-lambda-powershell-runtime-latest-version-arn
       Description: PwshRuntime Layer Name
       Type: String
       Value: !Ref PwshRuntimeLayer
@@ -76,6 +76,6 @@ Outputs:
   DemoAWSToolsLayer:
     Value: !Ref DemoAWSToolsLayer
     Description: DemoAWSToolsLayer Layer ARN    
-  PowerShellFunction:
-    Value: !Ref PowerShellFunction
+  DemoPowerShellFunction:
+    Value: !Ref DemoPowerShellFunction
     Description: PowerShell Lambda Function
