@@ -53,7 +53,7 @@ For subsequent deployments you can use `sam deploy`.
 Enter a **Stack Name** such as `powershell-runtime` and accept the remaining initial defaults.
 
 ### [AWS Command Line Interface (AWS CLI)](https://aws.amazon.com/cli/)
-
+coming soon...
 
 ## Powershell runtime information
 
