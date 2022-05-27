@@ -5,13 +5,11 @@ This new [PowerShell](https://docs.microsoft.com/en-us/powershell/scripting/over
 Your code runs in an Amazon Linux environment that includes AWS credentials from an [AWS Identity and Access Management (IAM)](https://aws.amazon.com/iam/) role that you manage.
 
 ## Overview
-Lambda has supported running PowerShell since 2018. Howeveer, this existing solution uses the .NET Core runtime [implementation for PowerShell](https://docs.aws.amazon.com/lambda/latest/dg/lambda-powershell.html). It uses the additional [AWSLambdaPSCore](https://www.powershellgallery.com/packages/AWSLambdaPSCore/3.0.1.0) modules for deployment and publishing, which require compiling the PowerShell code into C# binaries to run on .NET. This adds additional steps to the development process.
+Lambda has supported running PowerShell since 2018. However, the existing solution uses the .NET Core runtime [implementation for PowerShell](https://docs.aws.amazon.com/lambda/latest/dg/lambda-powershell.html). It uses the additional [AWSLambdaPSCore](https://www.powershellgallery.com/packages/AWSLambdaPSCore/3.0.1.0) modules for deployment and publishing, which require compiling the PowerShell code into C# binaries to run on .NET. This adds additional steps to the development process.
 
-The runtime uses Lambda's [custom runtime](https://docs.aws.amazon.com/lambda/latest/dg/runtimes-custom.html) functionality based on the `provided.al2` runtime.
-
+This new runtime uses Lambda's [custom runtime](https://docs.aws.amazon.com/lambda/latest/dg/runtimes-custom.html) functionality based on the `provided.al2` runtime.
 
 ## PowerShell custom runtime benefits
-
 
 * **Native PowerShell.** This new runtime uses native PowerShell.
   *  The function runtime environment matches a standard PowerShell session, which simplifies the development and testing process.
