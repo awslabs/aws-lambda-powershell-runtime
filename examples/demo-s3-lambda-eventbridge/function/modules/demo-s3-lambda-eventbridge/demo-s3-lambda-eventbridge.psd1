@@ -8,7 +8,7 @@
 RootModule = 'demo-s3-lambda-eventbridge.psm1'
 
 # Version number of this module.
-ModuleVersion = '1'
+ModuleVersion = '0.5'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()

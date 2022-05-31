@@ -35,7 +35,7 @@ Makefiles are not natively supported in Windows. When using Windows, you can use
 Clone the repository and change into the example directory
 ```
 git clone https://github.com/awslabs/aws-lambda-powershell-runtime
-cd examples/demo-s3-lambda-eventbridge
+cd aws-lambda-powershell-runtime/examples/demo-s3-lambda-eventbridge
 ```
 Use one of the *"Build"* options, A,B,C, depending on your operating system and tools.
 
@@ -70,13 +70,18 @@ sam deploy -g
 ```
 For subsequent deployments, you can use `sam deploy`.
 
-Enter a **Stack Name** and accept the remaining initial defaults.
+Enter a **Stack Name**.
 
-![sam deploy -g](/img/sam-deploy-g.png)
+Enter a unique S3 **SourceBucketName**. 
+You can use your AWS Account number to generate a unique name, for example `demo-s3-lambda-eventbridge-bucket-ACCOUNT_NUMBER`.
+
+Accept the remaining initial defaults.
+
+![sam deploy -g](/img/s3-demo-sam-deploy-g.png)
 
 AWS SAM deploys the infrastructure and outputs the details of the resources.
 
-![AWS SAM resources](/img/aws-sam-resources.png)
+![AWS SAM resources](/img/s3-demo-aws-sam-resources.png)
 
 ## Testing the event-driven application
 Use the AWS CLI or AWS Tools for PowerShell to copy the sample .CSV file to S3. Replace `BUCKET_NAME` with your S3 `SourceBucket` Name.

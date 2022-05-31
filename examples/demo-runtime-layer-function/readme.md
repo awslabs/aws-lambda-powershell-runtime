@@ -22,7 +22,7 @@ Windows does not natively support Makefiles. When using Windows, you can use eit
 Clone the repository and change into the example directory
 ```
 git clone https://github.com/awslabs/aws-lambda-powershell-runtime
-cd examples/demo-runtime-layer-function
+cd aws-lambda-powershell-runtime/examples/demo-runtime-layer-function
 ```
 Use one of the *"Build"* options, A,B,C, depending on your operating system and tools.
 
