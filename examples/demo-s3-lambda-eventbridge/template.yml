@@ -1,0 +1,188 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: demo-s3-lambda-eventbridge
+##########################################################################
+#  Parameters & Globals                                                  #
+##########################################################################
+Parameters:
+  SourceBucketName:
+    Type: String
+    Description: "REQUIRED: Unique S3 bucket name to use for the app."   
+    AllowedPattern: "[a-zA-Z][a-zA-Z0-9_-]*"
+  LogRetentionInDays:
+    Type: Number
+    Default: 7
+    Description: CloudWatch Logs retention period    
+
+Globals:
+  Function:
+    Tracing: Active
+    Tags:
+      Application: demo-s3-lambda-eventbridge
+
+Resources:
+##########################################################################
+#   S3 Bucket                                                            #
+##########################################################################
+  SourceBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref SourceBucketName
+
+##########################################################################
+#  Lambda functions                                                      #
+##########################################################################
+  S3toEBFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile    
+    Properties:
+      Description: PowerShell-Lambda-Runtime Demo Function
+      CodeUri: function/
+      Runtime: provided.al2
+      Handler: Module::demo-s3-lambda-eventbridge::handler
+      MemorySize: 1024
+      Timeout: 100
+      Layers:
+        - !Ref PwshRuntimeLayer
+        - !Ref AWSToolsS3EventBridgeLayer
+      Policies:
+        - S3ReadPolicy:
+            BucketName: !Ref SourceBucketName
+        - EventBridgePutEventsPolicy:
+            EventBusName: !Ref PowerShellEventBus          
+      Environment:
+        Variables:
+          DESTINATION_BUS: !Ref PowerShellEventBus
+      Events:
+        S3NewObjectEvent:
+          Type: S3
+          Properties:
+            Bucket: !Ref SourceBucket
+            Events: s3:ObjectCreated:*
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: suffix
+                    Value: ".csv"
+##########################################################################
+#  Lambda layers                                                         #
+##########################################################################
+  PwshRuntimeLayer: 
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      Description: Lambda Layer containing PowerShell
+      ContentUri: ../../powershell-runtime
+      CompatibleRuntimes:
+        - provided.al2
+      LicenseInfo: 'Available under the MIT-0 license.'
+      RetentionPolicy: Delete
+    Metadata:
+      BuildMethod: makefile
+
+  AWSToolsS3EventBridgeLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      Description: Layer containing AWSTools.S3EventBridge
+      ContentUri: ../../powershell-modules/AWSToolsforPowerShell/AWS.Tools.S3EventBridge
+      CompatibleRuntimes:
+        - provided.al2      
+      LicenseInfo: 'Available under the MIT-0 license.'
+      RetentionPolicy: Delete
+    Metadata:
+      BuildMethod: makefile
+
+##########################################################################
+#   EventBridge Resources                                                #
+##########################################################################
+  PowerShellEventBus:
+    Type: AWS::Events::EventBus
+    Properties:
+      Name: demo-s3-lambda-eventbridge
+
+  LogsRule:
+    Type: AWS::Events::Rule
+    Properties:
+      EventBusName: !Ref PowerShellEventBus
+      EventPattern:
+        source: 
+          - 'demo-s3-lambda-eventbridge'
+        account:
+          - !Ref AWS::AccountId
+      Targets:
+        - Arn: !GetAtt LogGroupForEvents.Arn
+          Id: LogTarget
+
+  LogGroupForEvents:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /aws/events/demo-s3-lambda-eventbridge
+      RetentionInDays: !Ref LogRetentionInDays
+
+  LogGroupForEventsPolicy:
+    Type: AWS::Logs::ResourcePolicy
+    Properties:
+      PolicyName: EventBridgeToCWLogsPolicy
+      PolicyDocument: !Sub >
+        {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "EventBridgetoCWLogsCreateLogStreamPolicy",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "events.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "logs:CreateLogStream"
+              ],
+              "Resource": [
+                "${LogGroupForEvents.Arn}"
+              ]
+            },
+            {
+              "Sid": "EventBridgetoCWLogsPutLogEventsPolicy",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "events.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "logs:PutLogEvents"
+              ],
+              "Resource": [
+                "${LogGroupForEvents.Arn}"
+              ],
+              "Condition": {
+                "ArnEquals": {"AWS:SourceArn": "${LogsRule.Arn}"}
+              }
+            }
+          ]
+        }
+
+##########################################################################
+#  OUTPUTS                                                               #
+##########################################################################
+Outputs:
+  PwshRuntimeLayer:
+    Value: !Ref PwshRuntimeLayer
+    Description: PwshRuntimeLayer Layer ARN
+  AWSToolsS3EventBridgeLayer:
+    Value: !Ref AWSToolsS3EventBridgeLayer
+    Description: AWSToolsS3EventBridgeLayer Layer ARN    
+  S3toEBFunction:
+    Value: !Ref S3toEBFunction
+    Description: S3toEB Lambda Function
+  SourceBucket:
+    Value: !Ref SourceBucket
+    Description: S3 Source Bucket for object storage
+  PowerShellEventBus:
+    Value: !Ref PowerShellEventBus
+    Description: EventBridge custom event bus
+  LogGroupForEvents:
+    Value: !Ref LogGroupForEvents
+    Description: CloudWatch log group for EventBridge rule
+
