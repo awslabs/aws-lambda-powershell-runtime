@@ -33,7 +33,7 @@ Contains a number of PowerShell modules you can build and add to your functions.
 | Module   | Description  |
 |:---|:---|
 |[AWSToolsforPowerShell](powershell-modules/AWSToolsforPowerShell/)|AWS Tools for PowerShell |
-
+|[VMwarePowerCLI](powershell-modules/VMwarePowerCLI/)|VMware PowerCLI|
 
 ### [Examples folder](examples/)
 Contains a number of demo applications to show the PowerShell runtime functionality.
