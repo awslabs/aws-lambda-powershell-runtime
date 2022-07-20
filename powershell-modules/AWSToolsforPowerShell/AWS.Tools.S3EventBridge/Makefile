@@ -1,5 +1,5 @@
 build-AWSToolsS3EventBridgeLayer:
-	# Copy and extract AWSToolsLayer module binaries
+	# Download AWSToolsLayer module binaries
 	curl -L -o $(ARTIFACTS_DIR)/AWS.Tools.zip https://sdk-for-net.amazonwebservices.com/ps/v4/latest/AWS.Tools.zip
 	mkdir -p $(ARTIFACTS_DIR)/modules
 

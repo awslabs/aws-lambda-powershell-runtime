@@ -13,7 +13,7 @@ function handler
         [parameter()]
         $LambdaContext
     )
-    Write-Verbose "Run handler function from script"
+    Write-Verbose "Run handler function from script1"
     Write-Verbose "Function Remaining Time: $($LambdaContext.GetRemainingTimeInMillis())"
     Get-AWSRegion
 }
