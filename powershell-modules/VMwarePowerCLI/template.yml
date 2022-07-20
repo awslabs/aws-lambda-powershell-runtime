@@ -1,0 +1,41 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: powershell-layer-PowerCLI
+##########################################################################
+#  Parameters & Globals                                                  #
+##########################################################################
+Globals:
+  Function:
+    Tracing: Active
+    Tags:
+      Application: powershell-layer-PowerCLI
+Resources:
+##########################################################################
+#  Lambda layers                                                         #
+##########################################################################
+  PowerCLILayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: PowerCLI
+      Description: Layer containing VMware PowerCLI
+      ContentUri: PowerCLI
+      CompatibleRuntimes:
+        - provided.al2      
+      RetentionPolicy: Delete
+    Metadata:
+      BuildMethod: makefile
+  PowerCLIParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: lambda-powershell-PowerCLI-latest-version-arn
+      Description: VMware PowerCLI Layer Name
+      Type: String
+      Value: !Ref PowerCLILayer
+
+##########################################################################
+#  OUTPUTS                                                               #
+##########################################################################
+Outputs:
+  PowerCLILayer:
+    Value: !Ref PowerCLILayer
+    Description: PowerCLILayer Layer ARN
