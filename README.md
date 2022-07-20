@@ -49,6 +49,7 @@ Initial demo application [demo-runtime-layer-function](examples/demo-runtime-lay
 | Example   | Description  |
 |:---|:---|
 |[demo-runtime-layer-function](examples/demo-runtime-layer-function/)|All-in-one Powershell runtime layer, AWS Tools for PowerShell layer, Lambda function with all three handler options |
+|[demo-s3-lambda-eventbridge](examples/demo-s3-lambda-eventbridge/)|Demo to show an event-drive application in PowerShell. Copy .CSV file to S3 which triggers PowerShell Lambda function which parses the file. Sends each file line as an event to EventBridge which writes it to CLoudWatch Logs. |
 
 ## Powershell runtime information
 See the [PowerShell-runtime](powershell-runtime/) page for more information on how the runtime works, including:
