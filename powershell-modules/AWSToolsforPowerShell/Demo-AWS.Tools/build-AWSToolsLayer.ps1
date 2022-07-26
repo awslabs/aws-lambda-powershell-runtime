@@ -3,19 +3,15 @@
 #################
 Write-Host "Downloading AWSToolsLayer" -foregroundcolor "green"
 Write-Host $PSScriptRoot
-Invoke-WebRequest  -Uri https://sdk-for-net.amazonwebservices.com/ps/v4/latest/AWS.Tools.zip -OutFile $PSScriptRoot\AWS.Tools.zip
+Invoke-WebRequest  -Uri https://sdk-for-net.amazonwebservices.com/ps/v4/latest/AWS.Tools.zip -OutFile $PSScriptRoot\stage\AWS.Tools.zip
 
-### Extract entire AWS.Tools modules
+### Extract entire AWS.Tools modules to stage area
 #Write-Host 'Extracting full AWSTools module to: '$PSScriptRoot\modules
-#Expand-Archive $PSScriptRoot\AWS.Tools.zip $PSScriptRoot\modules
+#Expand-Archive $PSScriptRoot\stage\AWS.Tools.zip $PSScriptRoot\modules
 
 ### Extract entire AWS.Tools modules to stage area but only move over select AWS.Tools modules (AWS.Tools.Common required)
 Write-Host "Extracting full AWSTools module to stage area:"$PSScriptRoot\stage -foregroundcolor "green"
-Expand-Archive $PSScriptRoot\AWS.Tools.zip $PSScriptRoot\stage -Force
-
-### Delete temporary artifacts
-Write-Host "Deleting AWSTools download" -foregroundcolor "green"
-Remove-Item $PSScriptRoot\AWS.Tools.zip
+Expand-Archive $PSScriptRoot\stage\AWS.Tools.zip $PSScriptRoot\stage -Force
 
 Write-Host "Moving selected AWSTools modules to modules directory:"$PSScriptRoot\modules\ -foregroundcolor "green"
 If (!(Test-Path "$PSScriptRoot\modules\")) {New-Item -ItemType Directory -Force -Path "$PSScriptRoot\modules\" > $null}
