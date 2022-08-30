@@ -123,3 +123,6 @@ invoke-result
 
 
 # End of https://www.toptal.com/developers/gitignore/api/powershell,windows,linux,macos,visualstudiocode,git
+
+# PowerShell runtime binaries
+powershell-runtime/pwsh-runtime/powershell
