@@ -1,7 +1,8 @@
-PWSH_VERSION ?= 7.2.4
-PWSH_ARCHITECTURE ?= x64
+PWSH_VERSION ?= 7.2.7
+PWSH_ARCHITECTURE ?= arm64
+
 #x64 or #arm64 
-build-PwshRuntimeLayer:
+build-PwshArm64RuntimeLayer:
 # Download and extract PowerShell binaries. Remove downloaded file
 	curl -L -o $(ARTIFACTS_DIR)/powershell-$(PWSH_VERSION)-$(PWSH_ARCHITECTURE).tar.gz https://github.com/PowerShell/PowerShell/releases/download/v$(PWSH_VERSION)/powershell-$(PWSH_VERSION)-linux-$(PWSH_ARCHITECTURE).tar.gz
 	mkdir -p $(ARTIFACTS_DIR)/powershell

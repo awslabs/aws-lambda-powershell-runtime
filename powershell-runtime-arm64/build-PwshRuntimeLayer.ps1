@@ -3,8 +3,8 @@
 ####################
 Write-Host "Downloading Powershell for PwshRuntimeLayer" -foregroundcolor "green"
 Write-Host $PSScriptRoot
-$PWSH_VERSION = "7.2.4"
-$PWSH_ARCHITECTURE = "x64" #"x64" or #"arm64"
+$PWSH_VERSION = "7.3.0"
+$PWSH_ARCHITECTURE = "arm64" #"x64" or #"arm64"
 Invoke-WebRequest  -Uri https://github.com/PowerShell/PowerShell/releases/download/v$PWSH_VERSION/powershell-$PWSH_VERSION-linux-$PWSH_ARCHITECTURE.tar.gz -OutFile  $PSScriptRoot\powershell-$PWSH_VERSION-$PWSH_ARCHITECTURE.tar.gz
 
 Write-Host "Extracting Powershell"$PWSH_VERSION" for "$PWSH_ARCHITECTURE "to:" $PSScriptRoot/powershell -foregroundcolor "green"

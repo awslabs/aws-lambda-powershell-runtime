@@ -19,34 +19,37 @@ Resources:
       Description: PowerShell-Lambda-Runtime Demo Function
       CodeUri: function/
       Runtime: provided.al2
+      Architectures: [ arm64 ]
       Handler: examplehandler.ps1::handler
       MemorySize: 1024
       Timeout: 100
       Layers:
-        - !Ref PwshRuntimeLayer
+        - !Ref PwshArm64RuntimeLayer
         - !Ref DemoAWSToolsLayer
     Metadata:
       BuildMethod: makefile
 ##########################################################################
 #  Lambda layers                                                         #
 ##########################################################################
-  PwshRuntimeLayer: 
+  PwshArm64RuntimeLayer: 
     Type: AWS::Serverless::LayerVersion
     Properties:
       Description: Lambda Layer containing PowerShell
-      ContentUri: ../../powershell-runtime
+      ContentUri: ../../powershell-runtime-arm64
       CompatibleRuntimes:
         - provided.al2
+      CompatibleArchitectures:
+        - arm64
       RetentionPolicy: Delete
     Metadata:
       BuildMethod: makefile
-  DemoPwshRuntimeParameter:
+  DemoPwshArm64RuntimeParameter:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: demo-lambda-powershell-runtime-latest-version-arn
+      Name: demo-lambda-powershell-runtime-arm64-latest-version-arn
       Description: PwshRuntime Layer Name
       Type: String
-      Value: !Ref PwshRuntimeLayer
+      Value: !Ref PwshArm64RuntimeLayer
 
   DemoAWSToolsLayer:
     Type: AWS::Serverless::LayerVersion
@@ -54,7 +57,10 @@ Resources:
       Description: Layer containing Demo-AWS.Tools
       ContentUri: ../../powershell-modules/AWSToolsforPowerShell/Demo-AWS.Tools
       CompatibleRuntimes:
-        - provided.al2      
+        - provided.al2
+      CompatibleArchitectures:
+        - x86_64
+        - arm64     
       RetentionPolicy: Delete
     Metadata:
       BuildMethod: makefile
@@ -71,7 +77,7 @@ Resources:
 ##########################################################################
 Outputs:
   PwshRuntimeLayer:
-    Value: !Ref PwshRuntimeLayer
+    Value: !Ref PwshArm64RuntimeLayer
     Description: PwshRuntimeLayer Layer ARN
   DemoAWSToolsLayer:
     Value: !Ref DemoAWSToolsLayer
