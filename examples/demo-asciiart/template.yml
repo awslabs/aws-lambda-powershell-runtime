@@ -1,0 +1,22 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: A demo using the reusable runtime (must be deployed first)
+##########################################################################
+#  Parameters & Globals                                                  #
+##########################################################################
+Resources:
+##########################################################################
+#  Lambda functions                                                      #
+##########################################################################
+  DemoAsciiArtFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: PowerShell-Lambda-Runtime Demo Function
+      CodeUri: function/
+      Runtime: provided.al2
+      Architectures: [ arm64 ]
+      Handler: script.ps1
+      MemorySize: 1024
+      Timeout: 100
+      Layers: [ '{{resolve:ssm:lambda-powershell-runtime-arm64-latest-version-arn}}' ]
+

@@ -1,0 +1,112 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Demo for how to publish the PowerShell custom runtime for reuse.
+##########################################################################
+#  Parameters & Globals                                                  #
+##########################################################################
+Parameters:
+  OrganizationId:
+    Type: String
+    Description: The ID of the Organization that will be granted access to the layers
+Resources:
+##########################################################################
+#  Lambda layers                                                         #
+##########################################################################
+  PwshArm64RuntimeLayer: 
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: PwshRuntime-arm64
+      Description: Lambda Layer containing PowerShell
+      ContentUri: ../../powershell-runtime
+      CompatibleRuntimes:
+        - provided.al2
+      CompatibleArchitectures:
+        - arm64
+      RetentionPolicy: Delete
+    Metadata:
+      BuildMethod: makefile
+  PwshArm64RuntimeLayerPermission:    
+    Type: AWS::Lambda::LayerVersionPermission
+    Properties: 
+      Action: lambda:GetLayerVersion
+      LayerVersionArn: !Ref PwshArm64RuntimeLayer
+      OrganizationId: !Ref OrganizationId
+      Principal: "*"
+  PwshArm64RuntimeParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: lambda-powershell-runtime-arm64-latest-version-arn
+      Description: PwshRuntime arm64 layer ARN
+      Type: String
+      Value: !Ref PwshArm64RuntimeLayer
+
+  Pwshx64RuntimeLayer: 
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: PwshRuntime-x64
+      Description: Lambda Layer containing PowerShell
+      ContentUri: ../../powershell-runtime
+      CompatibleRuntimes:
+        - provided.al2
+      CompatibleArchitectures:
+        - x86_64
+      RetentionPolicy: Delete
+    Metadata:
+      BuildMethod: makefile
+  Pwshx64RuntimeLayerPermission:    
+    Type: AWS::Lambda::LayerVersionPermission
+    Properties: 
+      Action: lambda:GetLayerVersion
+      LayerVersionArn: !Ref Pwshx64RuntimeLayer
+      OrganizationId: !Ref OrganizationId
+      Principal: "*"
+  Pwshx64RuntimeParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: lambda-powershell-runtime-x64-latest-version-arn
+      Description: PwshRuntime x86_64 layer ARN
+      Type: String
+      Value: !Ref Pwshx64RuntimeLayer
+
+  AWSToolsCommonLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: AWSToolsCommonLayer
+      Description: Layer containing AWS.Tools.Common module
+      ContentUri: ../../powershell-modules/AWSToolsforPowerShell/AWS.Tools.Common
+      CompatibleRuntimes:
+        - provided.al2
+      CompatibleArchitectures:
+        - x86_64
+        - arm64     
+      RetentionPolicy: Delete
+    Metadata:
+      BuildMethod: makefile
+  AWSToolsCommonLayerPermission:    
+    Type: AWS::Lambda::LayerVersionPermission
+    Properties: 
+      Action: lambda:GetLayerVersion
+      LayerVersionArn: !Ref AWSToolsCommonLayer
+      OrganizationId: !Ref OrganizationId
+      Principal: "*"
+  AWSToolsCommonLayerParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: lambda-powershell-PSAWSTools-latest-version-arn
+      Description: AWS.Tools.Common layer ARN
+      Type: String
+      Value: !Ref AWSToolsCommonLayer
+
+##########################################################################
+#  OUTPUTS                                                               #
+##########################################################################
+Outputs:
+  PwshArm64RuntimeLayer:
+    Value: !Ref PwshArm64RuntimeLayer
+    Description: PwshRuntime arm64 layer ARN
+  Pwshx64RuntimeLayer:
+    Value: !Ref Pwshx64RuntimeLayer
+    Description: PwshRuntime x86_64 layer ARN
+  PSAWSToolsLayer:
+    Value: !Ref AWSToolsCommonLayer
+    Description: AWSToolsCommonLayer Layer ARN
