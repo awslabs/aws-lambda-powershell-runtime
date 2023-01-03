@@ -14,7 +14,7 @@ Write-Host "Extracting full AWSTools module to stage area:"$PSScriptRoot\stage -
 Expand-Archive $PSScriptRoot\stage\AWS.Tools.zip $PSScriptRoot\stage -Force
 
 Write-Host "Moving selected AWSTools modules to modules directory:"$PSScriptRoot\modules\ -foregroundcolor "green"
-If (!(Test-Path "$PSScriptRoot\modules\")) {New-Item -ItemType Directory -Force -Path "$PSScriptRoot\modules\" > $null}
+if (!(Test-Path "$PSScriptRoot\modules\")) {New-Item -ItemType Directory -Force -Path "$PSScriptRoot\modules\" > $null}
 Move-Item "$PSScriptRoot\stage\AWS.Tools.Common" "$PSScriptRoot\modules\" -Force
 Move-Item "$PSScriptRoot\stage\AWS.Tools.S3" "$PSScriptRoot\modules\" -Force
 Move-Item "$PSScriptRoot\stage\AWS.Tools.EventBridge" "$PSScriptRoot\modules\" -Force

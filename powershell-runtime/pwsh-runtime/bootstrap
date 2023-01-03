@@ -1,75 +1,75 @@
 #!/opt/powershell/pwsh -noprofile
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache 2.0
-If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {$VerbosePreference = "continue"}
-If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-bootstrap]Start: bootstrap"}
+if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {$VerbosePreference = 'continue'}
+if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host '[RUNTIME-bootstrap]Start: bootstrap'}
 ## Initiating custom runtime
 
 # Set PowerShell version environment
 $env:POWERSHELL_VERSION = ($PSVersionTable).PSVersion.ToString()
-If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-bootstrap]Running PowerShell: $($env:POWERSHELL_VERSION)"}
+if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-bootstrap]Running PowerShell: $($env:POWERSHELL_VERSION)"}
 
 # Importing runtime module helpers
-If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-bootstrap]Importing runtime module helpers"}
+if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host '[RUNTIME-bootstrap]Importing runtime module helpers'}
 Import-Module '/opt/modules/pwsh-runtime.psd1'
 
 # Modify $env:PSModulePath to support Lambda paths
-If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-bootstrap]Modify PSModulePath to support Lambda paths"}
+if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host '[RUNTIME-bootstrap]Modify PSModulePath to support Lambda paths'}
 Set-PSModulePath
 
 # Parse _HANDLER environment variable
-If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-bootstrap]Parse _HANDLER environment variable"}
+if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host '[RUNTIME-bootstrap]Parse _HANDLER environment variable'}
 $private:handlerArray = Get-Handler -Handler $env:_HANDLER
 
 ## Initiating function
 # Run function/module pre-handler initialization in global scope
-If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-bootstrap]Run function/module pre-handler initialization in global scope"}
+if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host '[RUNTIME-bootstrap]Run function/module pre-handler initialization in global scope'}
 switch ($private:handlerArray.handlerType) {
-    "Function" {
-        If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-bootstrap]Dot sourcing PowerShell script: $($private:handlerArray.scriptFilePath)"}
+    'Function' {
+        if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-bootstrap]Dot sourcing PowerShell script: $($private:handlerArray.scriptFilePath)"}
         . $private:handlerArray.ScriptFilePath
     }
-    "Module" {
-        If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-bootstrap]Importing module: $($private:handlerArray.moduleName)"}
-        Import-Module -Name $private:handlerArray.moduleName -Force        
+    'Module' {
+        if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-bootstrap]Importing module: $($private:handlerArray.moduleName)"}
+        Import-Module -Name $private:handlerArray.moduleName -Force
     }
 }
 
 ## Event loop
 # Processes invocation events from Lambda Runtime API in a loop until runtime environment is terminated.
-If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-bootstrap]Start event loop"}
+if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host '[RUNTIME-bootstrap]Start event loop'}
 do {
-
     # Get /NEXT invocation from AWS Lambda Runtime API.
-    If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-bootstrap]Get /NEXT invocation from AWS Lambda Runtime API."}
+    if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host '[RUNTIME-bootstrap]Get /NEXT invocation from AWS Lambda Runtime API'}
     $private:runtimeNextInvocationResponse = Get-LambdaNextInvocation
 
     # Set default and AWS Lambda specific environment variables for each invocation
-    If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-bootstrap]Set default and AWS Lambda specific environment variables for each invocation"}
+    if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host '[RUNTIME-bootstrap]Set default and AWS Lambda specific environment variables for each invocation'}
     Set-HandlerEnvironmentVariables $private:runtimeNextInvocationResponse.headers
 
     # Create the $LambdaContext object
-    If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-bootstrap]Create the `$LambdaContext object"}
+    if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host '[RUNTIME-bootstrap]Create the $LambdaContext object'}
     $private:LambdaContext = Set-LambdaContext
 
     try {
         # Run function handler from script/module
-        If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-bootstrap]Run function handler from script/module"}
+        if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host '[RUNTIME-bootstrap]Run function handler from script/module'}
         $private:InvocationResponse = Invoke-FunctionHandler $private:runtimeNextInvocationResponse $private:handlerArray $private:LambdaContext
+
         # POST function handler response back to Runtime API
-        If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-bootstrap]POST function handler response back to Runtime API"}
+        if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host '[RUNTIME-bootstrap]POST function handler response back to Runtime API'}
         Send-FunctionHandlerResponse $private:InvocationResponse
     }
     catch {
         # POST function invocation error back to Runtime API
-        If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-bootstrap]POST function invocation error back to Runtime API"}
+        if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host '[RUNTIME-bootstrap]POST function invocation error back to Runtime API'}
         Send-FunctionHandlerError $_
     }
 
     # Cleanup
-    If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-bootstrap]Cleanup"}
-    Remove-Variable -Name 'LambdaInput', 'LambdaContext', 'private:LambdaContext', 'private:runtimeNextInvocationResponse', ' private:InvocationResponse' -ErrorAction 'SilentlyContinue'
+    if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host '[RUNTIME-bootstrap]Cleanup'}
+    Remove-Variable -Name 'LambdaInput', 'LambdaContext', 'private:LambdaContext', 'private:runtimeNextInvocationResponse', 'private:InvocationResponse' -ErrorAction 'SilentlyContinue'
     $env:_X_AMZN_TRACE_ID = ''
 }
 while ($true)
-If ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-bootstrap]Complete event loop, spindown runtime environment"}
+if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host '[RUNTIME-bootstrap]Complete event loop, spindown runtime environment'}
