@@ -8,7 +8,7 @@ Resources:
 ##########################################################################
 #  Lambda layers                                                         #
 ##########################################################################
-  PwshRuntimeLayer: 
+  PwshRuntimeLayer:
     Type: AWS::Serverless::LayerVersion
     Properties:
       Description: Lambda Layer containing PowerShell
