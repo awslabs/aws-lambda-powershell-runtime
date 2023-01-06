@@ -1,0 +1,994 @@
+﻿<chars>
+  <char>
+    <name>a</name>
+    <fixation>default</fixation>
+    <lines>4</lines>
+    <width>7</width>
+<data>  __ _
+ / _` |
+| (_| |
+ \__,_|</data>
+  </char>
+
+  <char>
+    <name>ä</name>
+    <fixation>default</fixation>
+    <lines>5</lines>
+    <width>7</width>
+<data> _   _
+(_)_(_)
+ / _` |
+| (_| |
+ \__,_|</data>
+  </char>
+
+  <char>
+    <name>à</name>
+    <fixation>default</fixation>
+    <lines>5</lines>
+    <width>7</width>
+<data>  __
+  \_\_
+ / _` |
+| (_| |
+ \__,_|</data>
+  </char>
+
+  <char>
+    <name>á</name>
+    <fixation>default</fixation>
+    <lines>5</lines>
+    <width>7</width>
+<data>   __
+  /_/_
+ / _` |
+| (_| |
+ \__,_|</data>
+  </char>
+
+  <char>
+    <name>â</name>
+    <fixation>default</fixation>
+    <lines>5</lines>
+    <width>7</width>
+<data>  //\
+ |/_\|
+ / _` |
+| (_| |
+ \__,_|</data>
+  </char>
+
+  <char>
+    <name>b</name>
+    <fixation>default</fixation>
+    <lines>5</lines>
+    <width>7</width>
+<data> _
+| |__
+| '_ \
+| |_) |
+|_.__/</data></char>
+
+
+  <char>
+    <name>c</name>
+    <fixation>default</fixation>
+    <lines>4</lines>
+    <width>6</width>
+<data>  ___
+ / __|
+| (__
+ \___|</data>
+  </char>
+
+  <char>
+    <name>d</name>
+    <fixation>default</fixation>
+    <lines>5</lines>
+    <width>7</width>
+<data>     _
+  __| |
+ / _` |
+| (_| |
+ \__,_|</data></char>
+
+
+  <char>
+    <name>e</name>
+    <fixation>default</fixation>
+    <lines>4</lines>
+    <width>6</width>
+<data>  ___
+ / _ \
+|  __/
+ \___|</data>
+ </char>
+
+  <char>
+    <name>é</name>
+    <fixation>default</fixation>
+    <lines>5</lines>
+    <width>6</width>
+<data>   __
+  /_/
+ / _ \
+|  __/
+ \___|</data>
+ </char>
+
+   <char>
+    <name>è</name>
+    <fixation>default</fixation>
+    <lines>5</lines>
+    <width>6</width>
+<data>  __
+  \_\
+ / _ \
+|  __/
+ \___|</data>
+ </char>
+
+  <char>
+    <name>ê</name>
+    <fixation>default</fixation>
+    <lines>5</lines>
+    <width>6</width>
+<data>  //\
+ |/_\|
+ / _ \
+|  __/
+ \___|</data>
+  </char>
+
+  <char>
+    <name>f</name>
+    <fixation>default</fixation>
+    <lines>5</lines>
+    <width>5</width>
+<data>  __
+ / _|
+| |_
+|  _|
+|_|</data></char>
+
+
+  <char>
+    <name>g</name>
+    <fixation>bottom</fixation>
+    <lines>5</lines>
+    <width>7</width>
+<data>  __ _
+ / _` |
+| (_| |
+ \__, |
+ |___/</data></char>
+
+  <char>
+    <name>h</name>
+    <fixation>default</fixation>
+    <lines>5</lines>
+    <width>7</width>
+<data> _
+| |__
+| '_ \
+| | | |
+|_| |_|</data></char>
+
+  <char>
+    <name>i</name>
+    <fixation>default</fixation>
+    <lines>5</lines>
+    <width>3</width>
+<data> _
+(_)
+| |
+| |
+|_|</data></char>
+
+  <char>
+    <name>j</name>
+    <fixation>default</fixation>
+    <lines>6</lines>
+    <width>5</width>
+<data>   _
+  (_)
+  | |
+  | |
+ _/ |
+|__/</data></char>
+
+  <char>
+    <name>k</name>
+    <fixation>default</fixation>
+    <lines>5</lines>
+    <width>6</width>
+<data> _
+| | __
+| |/ /
+|   &lt;
+|_|\_\</data></char>
+
+  <char>
+    <name>l</name>
+    <fixation>default</fixation>
+    <lines>5</lines>
+    <width>3</width>
+<data> _
+| |
+| |
+| |
+|_|</data></char>
+
+  <char>
+    <name>m</name>
+    <fixation>default</fixation>
+    <lines>4</lines>
+    <width>11</width>
+<data> _ __ ___
+| '_ ` _ \
+| | | | | |
+|_| |_| |_|</data></char>
+
+
+  <char>
+    <name>n</name>
+    <fixation>default</fixation>
+    <lines>4</lines>
+    <width>7</width>
+<data> _ __
+| '_ \
+| | | |
+|_| |_|</data></char>
+
+
+  <char>
+    <name>o</name>
+    <fixation>default</fixation>
+    <lines>4</lines>
+    <width>7</width>
+<data>  ___
+ / _ \
+| (_) |
+ \___/</data></char>
+
+  <char>
+    <name>ö</name>
+    <fixation>default</fixation>
+    <lines>5</lines>
+    <width>7</width>
+    <data> _   _
+(_)_(_)
+ / _ \
+| (_) |
+ \___/</data>
+  </char>
+
+
+  <char>
+    <name>ò</name>
+    <fixation>default</fixation>
+    <lines>5</lines>
+    <width>7</width>
+<data>  __
+  \_\
+ / _ \
+| (_) |
+ \___/</data>
+  </char>
+
+  <char>
+    <name>ó</name>
+    <fixation>default</fixation>
+    <lines>5</lines>
+    <width>7</width>
+<data>   __
+  /_/
+ / _ \
+| (_) |
+ \___/</data>
+  </char>
+
+  <char>
+    <name>ô</name>
+    <fixation>default</fixation>
+    <lines>5</lines>
+    <width>7</width>
+<data>  //\
+ |/_\|
+ / _ \
+| (_) |
+ \___/</data>
+  </char>
+
+  <char>
+    <name>p</name>
+    <fixation>bottom</fixation>
+    <lines>5</lines>
+    <width>7</width>
+<data> _ __
+| '_ \
+| |_) |
+| .__/
+|_|</data></char>
+  
+  <char>
+    <name>q</name>
+    <fixation>bottom</fixation>
+    <lines>5</lines>
+    <width>7</width>
+<data>  __ _
+ / _` |
+| (_| |
+ \__, |
+    |_|</data>
+  </char>
+  
+  <char>
+    <name>r</name>
+    <fixation>default</fixation>
+    <lines>4</lines>
+    <width>6</width>
+<data> _ __
+| '__|
+| |
+|_|</data></char>
+
+
+  <char>
+    <name>s</name>
+    <fixation>default</fixation>
+    <lines>4</lines>
+    <width>5</width>
+<data> ___
+/ __|
+\__ \
+|___/</data></char>
+
+  <char>
+    <name>t</name>
+    <fixation>default</fixation>
+    <lines>5</lines>
+    <width>5</width>
+<data> _
+| |_
+| __|
+| |_
+ \__|</data></char>
+
+
+  <char>
+    <name>u</name>
+    <fixation>default</fixation>
+    <lines>4</lines>
+    <width>7</width>
+    <data> _   _
+| | | |
+| |_| |
+ \__,_|</data>
+  </char>
+  
+  <char>
+    <name>ü</name>
+    <fixation>default</fixation>
+    <lines>5</lines>
+    <width>7</width>
+    <data> _   _
+(_) (_)
+| | | |
+| |_| |
+ \__,_|</data>
+   </char>
+
+
+  <char>
+    <name>v</name>
+    <fixation>default</fixation>
+    <lines>4</lines>
+    <width>7</width>
+<data>__   __
+\ \ / /
+ \ V /
+  \_/</data>
+  </char>
+
+
+  <char>
+    <name>w</name>
+    <fixation>default</fixation>
+    <lines>4</lines>
+    <width>10</width>
+<data>__      __
+\ \ /\ / /
+ \ V  V /
+  \_/\_/</data>
+  </char>
+
+
+  <char>
+    <name>x</name>
+    <fixation>default</fixation>
+    <lines>4</lines>
+    <width>6</width>
+<data>__  __
+\ \/ /
+ &gt;  &lt;
+/_/\_\</data>
+  </char>
+
+
+  <char>
+    <name>y</name>
+    <lines>5</lines>
+    <fixation>bottom</fixation>
+    <width>7</width>
+<data> _   _
+| | | |
+| |_| |
+ \__, |
+ |___/</data>
+  </char>
+
+    <char>
+      <name>z</name>
+      <fixation>default</fixation>
+      <lines>4</lines>
+      <width>5</width>
+<data> ____
+|_  /
+ / /
+/___|</data>
+  </char>
+
+  <char>
+    <name>æ</name>
+    <fixation>default</fixation>
+    <lines>4</lines>
+    <width>10</width>
+    <data>  __ ____
+ / _`  _ \
+| (_|  __/
+ \__,____|</data>
+   </char>
+
+
+  <char>
+    <name>ø</name>
+    <fixation>default</fixation>
+    <lines>4</lines>
+    <width>8</width>
+<data>  ____
+ / _//\
+| (//) |
+ \//__/</data>
+    </char>
+        
+  <char>
+    <name>å</name>
+    <fixation>default</fixation>
+    <lines>5</lines>
+    <width>7</width>
+<data>   __
+  (())
+ / _ '|
+| (_| |
+ \__,_|</data>
+  </char>
+
+  <char>
+    <name>_</name>
+    <fixation>default</fixation>
+    <lines>4</lines>
+    <width>3</width>
+    <data>&#xA0;&#xA0;&#xA0;
+&#xA0;&#xA0;&#xA0;
+&#xA0;&#xA0;&#xA0;
+&#xA0;&#xA0;&#xA0;</data>
+  </char>
+
+  <char>
+    <name>!</name>
+    <fixation>default</fixation>
+    <lines>5</lines>
+    <width>3</width>
+<data> _
+| |
+| |
+|_|
+(_)</data>
+  </char>
+    
+    <char>
+      <name>?</name>
+      <fixation>default</fixation>
+      <lines>5</lines>
+      <width>5</width>
+<data> ___
+|__ \
+  / /
+ |_|
+ (_)</data>
+    </char>
+    
+    <char>
+      <name>,</name>
+      <fixation>default</fixation>
+      <lines>4</lines>
+      <width>3</width>
+<data>
+ _ 
+( )
+|/</data>
+    </char>
+
+    <char>
+      <name>.</name>
+      <fixation>default</fixation>
+      <lines>4</lines>
+      <width>3</width>
+<data>   
+   
+ _ 
+(_)</data>
+    </char>
+
+    <char>
+      <name>-</name>
+      <fixation>default</fixation>
+      <lines>4</lines>
+      <width>7</width>
+<data>
+ _____
+|_____|
+</data>
+    </char>
+
+    <char>
+      <name>1</name>
+      <fixation>default</fixation>
+      <lines>5</lines>
+      <width>3</width>
+<data> _
+/ |
+| |
+| |
+|_|</data>
+    </char>
+    
+        <char>
+      <name>2</name>
+      <fixation>default</fixation>
+      <lines>5</lines>
+      <width>7</width>
+<data> ____
+|___ \
+  __) |
+ / __/
+|_____|</data>
+    </char>
+        
+        <char>
+      <name>3</name>
+      <fixation>default</fixation>
+      <lines>5</lines>
+      <width>7</width>
+<data> _____
+|___ /
+  |_ \
+ ___) |
+|____/</data>
+    </char>
+    
+        <char>
+      <name>4</name>
+      <fixation>default</fixation>
+      <lines>5</lines>
+      <width>8</width>
+<data> _  _
+| || |
+| || |_
+|__   _|
+   |_|</data>
+    </char>
+    
+        <char>
+      <name>5</name>
+      <fixation>default</fixation>
+      <lines>5</lines>
+      <width>7</width>
+<data> ____
+| ___|
+|___ \
+ ___) |
+|____/</data>
+    </char>
+
+    <char>
+      <name>6</name>
+      <fixation>default</fixation>
+      <lines>5</lines>
+      <width>7</width>
+<data>  __
+ / /_
+| '_ \
+| (_) |
+ \___/</data>
+    </char>
+    
+        <char>
+      <name>7</name>
+      <fixation>default</fixation>
+      <lines>5</lines>
+      <width>7</width>
+<data> _____
+|___  |
+   / /
+  / /
+ /_/</data>
+    </char>
+        
+        <char>
+      <name>8</name>
+      <fixation>default</fixation>
+      <lines>5</lines>
+      <width>7</width>
+<data>  ___
+ ( _ )
+ / _ \
+| (_) |
+ \___/</data>
+    </char>
+        
+<char>
+      <name>9</name>
+      <fixation>default</fixation>
+      <lines>5</lines>
+      <width>7</width>
+<data>  ___
+ / _ \
+| (_) |
+ \__, |
+   /_/</data>
+    </char>
+       
+    <char>
+      <name>0</name>
+      <fixation>default</fixation>
+      <lines>5</lines>
+      <width>7</width>
+<data>  ___
+ / _ \
+| | | |
+| |_| |
+ \___/</data>
+    </char>
+
+    <char>
+      <name>:</name>
+      <fixation>default</fixation>
+      <lines>4</lines>
+      <width>3</width>
+<data> _
+(_)
+ _
+(_)</data>
+    </char>
+
+    <char>
+      <name>;</name>
+      <fixation>default</fixation>
+      <lines>5</lines>
+      <width>3</width>
+<data> _
+(_)
+ _
+( )
+|/</data>
+    </char>
+
+  <char>
+    <name>(</name>
+    <fixation>default</fixation>
+    <lines>6</lines>
+    <width>5</width>
+    <data>   __
+  / /
+ | |
+ | |
+ | |
+  \_\</data>
+  </char>
+
+  <char>
+    <name>)</name>
+    <fixation>default</fixation>
+    <lines>6</lines>
+    <width>5</width>
+    <data> __
+ \ \
+  | |
+  | |
+  | |
+ /_/ </data>
+  </char>
+
+  <char>
+    <name>&lt;</name>
+    <fixation>default</fixation>
+    <lines>5</lines>
+    <width>5</width>
+    <data>   __
+  / /
+ / /
+ \ \
+  \_\</data>
+  </char>
+
+  <char>
+    <name>&gt;</name>
+    <fixation>default</fixation>
+    <lines>5</lines>
+    <width>5</width>
+    <data> __
+ \ \
+  \ \
+  / /
+ /_/ </data>
+  </char>
+
+  <char>
+    <name>[</name>
+    <fixation>default</fixation>
+    <lines>6</lines>
+    <width>5</width>
+    <data>  __
+ | _|
+ | |
+ | |
+ | |
+ |__|</data>
+  </char>
+
+  <char>
+    <name>]</name>
+    <fixation>default</fixation>
+    <lines>6</lines>
+    <width>5</width>
+    <data>  __
+ |_ |
+  | |
+  | |
+  | |
+ |__|</data>
+  </char>
+
+  <char>
+    <name>{</name>
+    <fixation>default</fixation>
+    <lines>6</lines>
+    <width>6</width>
+    <data>    __
+   / /
+  | |
+ &lt; &lt;
+  | |
+   \_\</data>
+  </char>
+
+  <char>
+    <name>}</name>
+    <fixation>default</fixation>
+    <lines>6</lines>
+    <width>6</width>
+    <data> __
+ \ \
+  | |
+   &gt; &gt;
+  | |
+ /_/  </data>
+  </char>
+
+  <char>
+    <name>/</name>
+    <fixation>default</fixation>
+    <lines>5</lines>
+    <width>7</width>
+    <data>     __
+    / /
+   / /
+  / /
+ /_/   </data>
+  </char>
+
+  <char>
+    <name>\</name>
+    <fixation>default</fixation>
+    <lines>5</lines>
+    <width>7</width>
+    <data> __
+ \ \
+  \ \
+   \ \
+    \_\</data>
+  </char>
+
+  <char>
+    <name>+</name>
+    <fixation>default</fixation>
+    <lines>4</lines>
+    <width>7</width>
+    <data>   _
+ _| |_
+|_   _|
+  |_|</data>
+  </char>
+
+  <char>
+    <name>|</name>
+    <fixation>default</fixation>
+    <lines>6</lines>
+    <width>3</width>
+    <data> _
+| |
+| |
+| |
+| |
+|_|</data>
+  </char>
+
+  <char>
+    <name>`</name>
+    <fixation>default</fixation>
+    <lines>5</lines>
+    <width>3</width>
+    <data> _
+( )
+ \|
+
+</data>
+  </char>
+
+  <char>
+    <name>'</name>
+    <fixation>default</fixation>
+    <lines>5</lines>
+    <width>3</width>
+    <data> _
+( )
+|/
+
+</data>
+  </char>
+
+
+
+  <char>
+    <name>"</name>
+    <fixation>default</fixation>
+    <lines>5</lines>
+    <width>5</width>
+    <data> _ _
+( | )
+ V V
+
+</data>
+  </char>
+  
+  <char>
+    <name>¤</name>
+    <lines>5</lines>
+    <fixation>bottom</fixation>
+    <width>7</width>
+    <data>/\___/\
+\  _  /
+| (_) |
+/ ___ \
+\/   \/</data>
+  </char>
+  
+  <char>
+    <name>'</name>
+    <fixation>default</fixation>
+    <lines>5</lines>
+    <width>3</width>
+    <data> _
+( )
+|/
+
+</data>
+  </char>
+
+  <char>
+    <name>*</name>
+    <fixation>default</fixation>
+    <lines>4</lines>
+    <width>6</width>
+<data>__/\__
+\    /
+/_  _\
+  \/</data>
+  </char>
+
+
+  <char>
+    <name>^</name>
+    <fixation>default</fixation>
+    <lines>4</lines>
+    <width>4</width>
+<data> /\
+|/\|
+
+</data>
+  </char>
+
+
+  <char>
+    <name>$</name>
+    <fixation>default</fixation>
+    <lines>6</lines>
+    <width>5</width>
+<data>  _
+ | |
+/ __)
+\__ \
+(   /
+ |_|</data>
+  </char>
+
+  <char>
+    <name>=</name>
+    <fixation>default</fixation>
+    <lines>4</lines>
+    <width>7</width>
+<data> _____
+|_____|
+|_____|
+</data>
+  </char>
+ 
+  <char>
+    <name>£</name>
+    <fixation>default</fixation>
+    <lines>5</lines>
+    <width>8</width>
+<data>   ___
+  / ,_\
+_| |_
+ | |___
+(_,____|</data>
+  </char>
+  
+  <char>
+    <name>@</name>
+    <fixation>default</fixation>
+    <lines>6</lines>
+    <width>9</width>
+<data>   ____
+  / __ \
+ / / _` |
+| | (_| |
+ \ \__,_|
+  \____/</data>
+  </char>
+
+  <char>
+    <name>#</name>
+    <fixation>default</fixation>
+    <lines>5</lines>
+    <width>10</width>
+<data>   _  _
+ _| || |_
+|_  ..  _|
+|_      _|
+  |_||_|</data>
+  </char>
+
+  <char>
+    <name>template</name>
+    <fixation>default</fixation>
+    <lines>5</lines>
+    <width>6</width>
+<data></data>
+  </char>
+
+
+</chars>

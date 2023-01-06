@@ -1,0 +1,137 @@
+<Objs Version="1.1.0.1" xmlns="http://schemas.microsoft.com/powershell/2004/04">
+  <Obj RefId="0">
+    <TN RefId="0">
+      <T>Microsoft.PowerShell.Commands.PSRepositoryItemInfo</T>
+      <T>System.Management.Automation.PSCustomObject</T>
+      <T>System.Object</T>
+    </TN>
+    <MS>
+      <S N="Name">WriteAscii</S>
+      <Version N="Version">1.2.2</Version>
+      <S N="Type">Module</S>
+      <S N="Description">Use Svendsen Tech's Write-Ascii function to produce (optionally colored) ASCII art text letters from strings, in PowerShell. See Get-Help Write-Ascii for more information. GitHub link here: https://github.com/EliteLoser/WriteAscii - online blog documentation here: https://www.powershelladmin.com/wiki/Ascii_art_characters_powershell_script</S>
+      <S N="Author">Joakim Borger Svendsen</S>
+      <S N="CompanyName">joakimbs</S>
+      <S N="Copyright">Copyright (c) 2012-present, Joakim Borger Svendsen. Svendsen Tech. All rights reserved.</S>
+      <DT N="PublishedDate">2018-12-08T22:48:45-05:00</DT>
+      <Obj N="InstalledDate" RefId="1">
+        <DT>2022-11-28T12:59:12.419239-05:00</DT>
+        <MS>
+          <Obj N="DisplayHint" RefId="2">
+            <TN RefId="1">
+              <T>Microsoft.PowerShell.Commands.DisplayHintType</T>
+              <T>System.Enum</T>
+              <T>System.ValueType</T>
+              <T>System.Object</T>
+            </TN>
+            <ToString>DateTime</ToString>
+            <I32>2</I32>
+          </Obj>
+        </MS>
+      </Obj>
+      <Nil N="UpdatedDate" />
+      <URI N="LicenseUri">https://github.com/EliteLoser/WriteAscii/blob/master/LICENSE</URI>
+      <URI N="ProjectUri">https://github.com/EliteLoser/WriteAscii</URI>
+      <Nil N="IconUri" />
+      <Obj N="Tags" RefId="3">
+        <TN RefId="2">
+          <T>System.Object[]</T>
+          <T>System.Array</T>
+          <T>System.Object</T>
+        </TN>
+        <LST>
+          <S>ASCII</S>
+          <S>Write-Ascii</S>
+          <S>Art</S>
+          <S>PSModule</S>
+        </LST>
+      </Obj>
+      <Obj N="Includes" RefId="4">
+        <TN RefId="3">
+          <T>System.Collections.Hashtable</T>
+          <T>System.Object</T>
+        </TN>
+        <DCT>
+          <En>
+            <S N="Key">Function</S>
+            <Obj N="Value" RefId="5">
+              <TNRef RefId="2" />
+              <LST>
+                <S>Write-Ascii</S>
+              </LST>
+            </Obj>
+          </En>
+          <En>
+            <S N="Key">RoleCapability</S>
+            <Obj N="Value" RefId="6">
+              <TNRef RefId="2" />
+              <LST />
+            </Obj>
+          </En>
+          <En>
+            <S N="Key">Cmdlet</S>
+            <Ref N="Value" RefId="6" />
+          </En>
+          <En>
+            <S N="Key">Command</S>
+            <Obj N="Value" RefId="7">
+              <TNRef RefId="2" />
+              <LST>
+                <S>Write-Ascii</S>
+              </LST>
+            </Obj>
+          </En>
+          <En>
+            <S N="Key">Workflow</S>
+            <Ref N="Value" RefId="6" />
+          </En>
+          <En>
+            <S N="Key">DscResource</S>
+            <Ref N="Value" RefId="6" />
+          </En>
+        </DCT>
+      </Obj>
+      <Nil N="PowerShellGetFormatVersion" />
+      <S N="ReleaseNotes">* Module manifest updates with links and GitHub links._x000D__x000A_    * Putting this in the PSGallery after a little makeover._x000D__x000A_    * The XML file could do with a larger character set.</S>
+      <Obj N="Dependencies" RefId="8">
+        <TNRef RefId="2" />
+        <LST />
+      </Obj>
+      <S N="RepositorySourceLocation">https://www.powershellgallery.com/api/v2</S>
+      <S N="Repository">PSGallery</S>
+      <S N="PackageManagementProvider">NuGet</S>
+      <Obj N="AdditionalMetadata" RefId="9">
+        <TN RefId="4">
+          <T>System.Management.Automation.PSCustomObject</T>
+          <T>System.Object</T>
+        </TN>
+        <MS>
+          <S N="copyright">Copyright (c) 2012-present, Joakim Borger Svendsen. Svendsen Tech. All rights reserved.</S>
+          <S N="description">Use Svendsen Tech's Write-Ascii function to produce (optionally colored) ASCII art text letters from strings, in PowerShell. See Get-Help Write-Ascii for more information. GitHub link here: https://github.com/EliteLoser/WriteAscii - online blog documentation here: https://www.powershelladmin.com/wiki/Ascii_art_characters_powershell_script</S>
+          <S N="requireLicenseAcceptance">False</S>
+          <S N="releaseNotes">* Module manifest updates with links and GitHub links._x000D__x000A_    * Putting this in the PSGallery after a little makeover._x000D__x000A_    * The XML file could do with a larger character set.</S>
+          <S N="isLatestVersion">False</S>
+          <S N="isAbsoluteLatestVersion">False</S>
+          <S N="versionDownloadCount">1468</S>
+          <S N="downloadCount">11945</S>
+          <S N="packageSize">9748</S>
+          <S N="published">12/8/2018 10:48:45 PM -05:00</S>
+          <S N="created">12/8/2018 10:48:45 PM -05:00</S>
+          <S N="lastUpdated">11/28/2022 5:56:06 PM -05:00</S>
+          <S N="tags">ASCII Write-Ascii Art PSModule PSFunction_Write-Ascii PSCommand_Write-Ascii PSIncludes_Function</S>
+          <S N="developmentDependency">False</S>
+          <S N="updated">2022-11-28T17:56:06Z</S>
+          <S N="NormalizedVersion">1.2.2</S>
+          <S N="Authors">Joakim Borger Svendsen</S>
+          <S N="IsPrerelease">false</S>
+          <S N="ItemType">Module</S>
+          <S N="FileList">WriteAscii.nuspec|letters.xml|WriteAscii.psd1|WriteAscii.psm1</S>
+          <S N="GUID">bf3e3bb5-97de-416a-97d7-edf403fa7976</S>
+          <S N="PowerShellVersion">2.0</S>
+          <S N="CompanyName">Svendsen Tech</S>
+        </MS>
+      </Obj>
+      <S N="InstalledLocation">/Users/andyhopp/.local/share/powershell/Modules/WriteAscii/1.2.2</S>
+    </MS>
+  </Obj>
+</Objs>
