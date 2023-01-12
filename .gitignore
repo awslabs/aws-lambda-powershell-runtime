@@ -126,3 +126,4 @@ invoke-result
 
 # PowerShell runtime binaries
 powershell-runtime/pwsh-runtime/powershell
+powershell-modules/AWSToolsforPowerShell/Demo-AWS.Tools/modules/
