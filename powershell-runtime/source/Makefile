@@ -12,7 +12,10 @@ build-PwshRuntimeLayer:
 	chmod +x $(ARTIFACTS_DIR)/powershell/pwsh
 
 # Copy additional runtime files, including bootstrap. Remove Makefile from destination
-	cp -R ./pwsh-runtime/* $(ARTIFACTS_DIR)
+	cp bootstrap $(ARTIFACTS_DIR)
+	cp PowerShellLambdaContext.cs $(ARTIFACTS_DIR)
+	mkdir $(ARTIFACTS_DIR)/modules
+	cp -R ./modules/* $(ARTIFACTS_DIR)/modules/
 
 # Merge all Private module content into a single .psm1 file to speed up module loading
 	cd $(ARTIFACTS_DIR)/modules/Private

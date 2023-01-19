@@ -12,7 +12,7 @@ Resources:
     Type: AWS::Serverless::LayerVersion
     Properties:
       Description: Lambda Layer containing PowerShell
-      ContentUri: .
+      ContentUri: .\source
       CompatibleRuntimes:
         - provided.al2
       RetentionPolicy: Delete
