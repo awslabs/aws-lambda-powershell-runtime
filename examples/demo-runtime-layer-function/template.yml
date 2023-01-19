@@ -30,11 +30,11 @@ Resources:
 ##########################################################################
 #  Lambda layers                                                         #
 ##########################################################################
-  PwshRuntimeLayer: 
+  PwshRuntimeLayer:
     Type: AWS::Serverless::LayerVersion
     Properties:
       Description: Lambda Layer containing PowerShell
-      ContentUri: ../../powershell-runtime
+      ContentUri: ../../powershell-runtime/source
       CompatibleRuntimes:
         - provided.al2
       RetentionPolicy: Delete
@@ -54,7 +54,7 @@ Resources:
       Description: Layer containing Demo-AWS.Tools
       ContentUri: ../../powershell-modules/AWSToolsforPowerShell/Demo-AWS.Tools
       CompatibleRuntimes:
-        - provided.al2      
+        - provided.al2
       RetentionPolicy: Delete
     Metadata:
       BuildMethod: makefile
@@ -75,7 +75,7 @@ Outputs:
     Description: PwshRuntimeLayer Layer ARN
   DemoAWSToolsLayer:
     Value: !Ref DemoAWSToolsLayer
-    Description: DemoAWSToolsLayer Layer ARN    
+    Description: DemoAWSToolsLayer Layer ARN
   DemoPowerShellFunction:
     Value: !Ref DemoPowerShellFunction
     Description: PowerShell Lambda Function

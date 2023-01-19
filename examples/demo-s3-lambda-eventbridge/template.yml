@@ -7,12 +7,12 @@ Description: demo-s3-lambda-eventbridge
 Parameters:
   SourceBucketName:
     Type: String
-    Description: "REQUIRED: Unique S3 bucket name to use for the app."   
+    Description: "REQUIRED: Unique S3 bucket name to use for the app."
     AllowedPattern: "[a-zA-Z][a-zA-Z0-9_-]*"
   LogRetentionInDays:
     Type: Number
     Default: 7
-    Description: CloudWatch Logs retention period    
+    Description: CloudWatch Logs retention period
 
 Globals:
   Function:
@@ -35,7 +35,7 @@ Resources:
   S3toEBFunction:
     Type: AWS::Serverless::Function
     Metadata:
-      BuildMethod: makefile    
+      BuildMethod: makefile
     Properties:
       Description: PowerShell-Lambda-Runtime Demo Function
       CodeUri: function/
@@ -50,7 +50,7 @@ Resources:
         - S3ReadPolicy:
             BucketName: !Ref SourceBucketName
         - EventBridgePutEventsPolicy:
-            EventBusName: !Ref PowerShellEventBus          
+            EventBusName: !Ref PowerShellEventBus
       Environment:
         Variables:
           DESTINATION_BUS: !Ref PowerShellEventBus
@@ -68,11 +68,11 @@ Resources:
 ##########################################################################
 #  Lambda layers                                                         #
 ##########################################################################
-  PwshRuntimeLayer: 
+  PwshRuntimeLayer:
     Type: AWS::Serverless::LayerVersion
     Properties:
       Description: Lambda Layer containing PowerShell
-      ContentUri: ../../powershell-runtime
+      ContentUri: ../../powershell-runtime/source
       CompatibleRuntimes:
         - provided.al2
       LicenseInfo: 'Available under the MIT-0 license.'
@@ -86,7 +86,7 @@ Resources:
       Description: Layer containing AWSTools.S3EventBridge
       ContentUri: ../../powershell-modules/AWSToolsforPowerShell/AWS.Tools.S3EventBridge
       CompatibleRuntimes:
-        - provided.al2      
+        - provided.al2
       LicenseInfo: 'Available under the MIT-0 license.'
       RetentionPolicy: Delete
     Metadata:
@@ -105,7 +105,7 @@ Resources:
     Properties:
       EventBusName: !Ref PowerShellEventBus
       EventPattern:
-        source: 
+        source:
           - 'demo-s3-lambda-eventbridge'
         account:
           - !Ref AWS::AccountId
@@ -172,7 +172,7 @@ Outputs:
     Description: PwshRuntimeLayer Layer ARN
   AWSToolsS3EventBridgeLayer:
     Value: !Ref AWSToolsS3EventBridgeLayer
-    Description: AWSToolsS3EventBridgeLayer Layer ARN    
+    Description: AWSToolsS3EventBridgeLayer Layer ARN
   S3toEBFunction:
     Value: !Ref S3toEBFunction
     Description: S3toEB Lambda Function
