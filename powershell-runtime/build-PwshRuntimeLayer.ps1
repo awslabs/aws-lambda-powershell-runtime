@@ -13,3 +13,11 @@ tar zxf  $PSScriptRoot/powershell-$PWSH_VERSION-$PWSH_ARCHITECTURE.tar.gz -C  $P
 
 Write-Host "Deleting PowerShell download" -foregroundcolor "green"
 Remove-Item  $PSScriptRoot/powershell-$PWSH_VERSION-$PWSH_ARCHITECTURE.tar.gz
+
+Write-Host "Merge all Private module content into a single .psm1 file to speed up module loading" -foregroundcolor "green"
+If (!(Select-String -Path $PSScriptRoot/pwsh-runtime/modules/pwsh-runtime.psm1 -Pattern 'private:Get-Handler')) {
+    Get-ChildItem -Path $PSScriptRoot/pwsh-runtime/modules/Private -Filter *.ps1 | ForEach-Object {Get-Content $_ | Select-Object -Skip 2 | Out-File -FilePath $PSScriptRoot/pwsh-runtime/modules/pwsh-runtime.psm1 -Append}
+    Remove-Item  $PSScriptRoot/pwsh-runtime/modules/Private -Force -Recurse
+} else {
+    Write-Host "Private modules likely merged already, skipping" -foregroundcolor "green"
+}
