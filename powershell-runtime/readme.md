@@ -19,6 +19,7 @@ Windows does not natively support Makefiles. When using Windows, you can use eit
 Clone the repository and change into the runtime directory
 ```
 git clone https://github.com/awslabs/aws-lambda-powershell-runtime
+cd aws-lambda-powershell-runtime
 cd powershell-runtime
 ```
 Use one of the *"Build"* options, A,B,C, depending on your operating system and tools.
