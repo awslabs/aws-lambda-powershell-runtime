@@ -1,30 +1,24 @@
-$ProgressPreference = 'SilentlyContinue'
-
 #################
 # AWSToolsLayer #
 #################
 Write-Host "Downloading AWSToolsLayer" -foregroundcolor "green"
 Write-Host $PSScriptRoot
-
-$stagePath = Join-Path -Path $PSScriptRoot -ChildPath 'stage'
-$modulesPath = Join-Path -Path $PSScriptRoot -ChildPath 'modules'
-
+$stagePath = Join-Path -Path $PSScriptRoot -ChildPath '\buildlayer\stage'
 New-Item -Path $stagePath -ItemType Directory -Force | Out-Null
-Invoke-WebRequest -Uri https://sdk-for-net.amazonwebservices.com/ps/v4/latest/AWS.Tools.zip -OutFile $stagePath\AWS.Tools.zip
+$modulesPath = Join-Path -Path $PSScriptRoot -ChildPath '\buildlayer\modules'
+New-Item -Path $modulesPath -ItemType Directory -Force | Out-Null
 
-### Extract entire AWS.Tools modules to stage area
-#Write-Host "Extracting full AWSTools module to: $modulesPath"
-#Expand-Archive -Path $stagePath\AWS.Tools.zip -DestinationPath $modulesPath
+Write-Host "Downloading full AWSTools module to stage area:" $stagePath -foregroundcolor "green"
+Invoke-WebRequest  -Uri https://sdk-for-net.amazonwebservices.com/ps/v4/latest/AWS.Tools.zip -OutFile $stagePath\AWS.Tools.zip
 
 ### Extract entire AWS.Tools modules to stage area but only move over select AWS.Tools modules (AWS.Tools.Common required)
-Write-Host "Extracting full AWSTools module to stage area: $stagePath" -foregroundcolor "green"
-Expand-Archive -Path $stagePath\AWS.Tools.zip -DestinationPath $stagePath -Force
+Write-Host "Extracting full AWSTools module to stage area:" $stagePath -foregroundcolor "green"
+Expand-Archive $stagePath\AWS.Tools.zip $stagePath -Force
 
-Write-Host "Moving selected AWSTools modules to modules directory: $modulesPath" -foregroundcolor "green"
-New-Item -ItemType Directory -Force -Path $modulesPath | Out-Null
-Move-Item -Path "$stagePath\AWS.Tools.Common" -Destination $modulesPath -Force
-# Move-Item -Path "$stagePath\AWS.Tools.S3" -Destination $modulesPath -Force
-# Move-Item -Path "$stagePath\AWS.Tools.EventBridge" -Destination $modulesPath -Force
+Write-Host "Moving selected AWSTools modules to modules directory:"$modulesPath -foregroundcolor "green"
+Move-Item "$stagePath\AWS.Tools.Common" "$modulesPath" -Force
+# Move-Item "$stagePathe\AWS.Tools.S3" "$modulesPath" -Force
+# Move-Item "$stagePath\AWS.Tools.EventBridge" "$modulesPath" -Force
 
 Write-Host "Deleting AWSTools stage area" -foregroundcolor "green"
-Remove-Item -Path $stagePath -Recurse
+Remove-Item $stagePath -Recurse

@@ -17,9 +17,9 @@ Resources:
     Type: AWS::Serverless::LayerVersion
     Properties:
       Description: Layer containing AWSTools.All
-      ContentUri: AWS.Tools.All
+      ContentUri: buildlayer
       CompatibleRuntimes:
-        - provided.al2      
+        - provided.al2
       RetentionPolicy: Delete
     Metadata:
       BuildMethod: makefile
