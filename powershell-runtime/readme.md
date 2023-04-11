@@ -1,4 +1,5 @@
 # PowerShell-runtime
+
 Contains the PowerShell custom runtime based on ````provided.al2```` with a number of deployment methods.
 
 Deploy the example [demo-runtime-layer-function](../examples/demo-runtime-layer-function/) to explore how the runtime and PowerShell function work.
@@ -15,45 +16,54 @@ To build the custom runtime layer, AWS SAM uses a Makefile. This downloads the s
 
 Windows does not natively support Makefiles. When using Windows, you can use either [Windows Subsystem for Linux (WSL)](https://docs.microsoft.com/en-us/windows/wsl/about), [Docker Desktop](https://docs.docker.com/get-docker/) or native PowerShell.
 
-
 Clone the repository and change into the runtime directory
-```
+
+```shell
 git clone https://github.com/awslabs/aws-lambda-powershell-runtime
 cd aws-lambda-powershell-runtime
 cd powershell-runtime
 ```
+
 Use one of the *"Build"* options, A,B,C, depending on your operating system and tools.
 
 ### A) Build using Linux or WSL
+
 Build the custom runtime using native Linux or WSL.
-```
+
+```shell
 sam build --parallel
 ```
 
 ### B) Build using Docker
+
 You can build the custom runtime using Docker. This uses a Linux-based Lambda-like Docker container to build the packages. Use this option for Windows without WSL or as an isolated Mac/Linux build environment.
 
-```
+```shell
 sam build --parallel --use-container
 ```
 
 ### C) Build using PowerShell for Windows
+
 You can use native PowerShell for Windows to download and extract the custom runtime files. This performs the same file copy functionality as the Makefile. It adds the files to the source folders rather than a build location for subsequent deployment with AWS SAM. Use this option for Windows without WSL or Docker.
 
-```
+```shell
 .\build-PwshRuntimeLayer
 ```
 
 ### Deploying to the AWS Cloud
+
 Use AWS SAM to deploy the runtime and optional SSM parameter to your AWS account. Run a guided deployment to set the default parameters for the first deploy.
-```
+
+```shell
 sam deploy -g
 ```
+
 For subsequent deployments you can use `sam deploy`.
 
 Enter a **Stack Name** such as `powershell-runtime` and accept the remaining initial defaults.
 
 ### [AWS Command Line Interface (AWS CLI)](https://aws.amazon.com/cli/)
+
 coming soon...
 
 ## Powershell runtime information
@@ -71,11 +81,11 @@ The runtime defines the following variables which are made available to the Lamb
 
 When Lambda runs your function, it passes context information by making a `$LambdaContext` variable available to the script, module, or handler. This variable provides methods and properties with information about the invocation, function, and execution environment.
 
-**Context methods**
+#### Context methods
 
 * `getRemainingTimeInMillis` – Returns the number of milliseconds left before the invocation times out.
 
-**Context properties**
+#### Context properties
 
 * `FunctionName` – The name of the Lambda function.
 * `FunctionVersion` – The [version](https://docs.aws.amazon.com/lambda/latest/dg/configuration-versions.html) of the function.
@@ -145,11 +155,13 @@ Default modules within the PowerShell runtime layer. You can include additional 
 `<layer_root>/powershell/modules/<module_name>/<module_version>/<module_name.psd1>`
 
 ### Function logging and metrics
+
 AWS Lambda automatically monitors Lambda functions on your behalf and sends function metrics to [Amazon CloudWatch](https://aws.amazon.com/cloudwatch/). Your Lambda function comes with a CloudWatch Logs log group and a log stream for each instance of your function. The Lambda runtime environment sends details about each invocation to the log stream, and relays logs and other output from your function’s code. For more information, see the [documentation](https://docs.aws.amazon.com/lambda/latest/dg/powershell-logging.html).
 
 Output from `Write-Host`, `Write-Verbose`, `Write-Warning`, and `Write-Error` is written to the function log stream. The output from `Write-Output` is added to the pipeline, which you can use with your function response.
 
 ### Error handling
+
 The runtime can terminate your function because it ran out of time, detected a syntax error, or failed to marshal the response object into JSON.
 
 Your function code can throw an exception or return an error object. Lambda writes the error to CloudWatch Logs and, for synchronous invocations, also returns the error in the function response output.

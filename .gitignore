@@ -126,3 +126,4 @@ invoke-result
 
 # PowerShell runtime binaries
 powershell-runtime/pwsh-runtime/powershell
+dev/
