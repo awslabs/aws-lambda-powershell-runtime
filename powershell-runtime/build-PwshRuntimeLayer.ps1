@@ -7,7 +7,7 @@ Write-Host "Downloading Powershell for PwshRuntimeLayer" -ForegroundColor 'Green
 Write-Host $PSScriptRoot
 
 # PWSH_VERSION is version of PowerShell to use for the runtime
-$PWSH_VERSION = "7.2.4"
+$PWSH_VERSION = "7.2.11"
 
 # PWSH_ARCHITECTURE can be 'x64' or 'arm64'
 $PWSH_ARCHITECTURE = "x64"
