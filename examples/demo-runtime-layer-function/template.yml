@@ -16,6 +16,7 @@ Resources:
   DemoPowerShellFunction:
     Type: AWS::Serverless::Function
     Properties:
+      Architectures: arm64
       Description: PowerShell-Lambda-Runtime Demo Function
       CodeUri: function/
       Runtime: provided.al2

@@ -17,7 +17,7 @@ Resources:
     Type: AWS::Serverless::LayerVersion
     Properties:
       Description: Layer containing Demo-AWS.Tools
-      ContentUri: buildlayer
+      ContentUri: ./buildlayer
       CompatibleRuntimes:
         - provided.al2
       RetentionPolicy: Delete
