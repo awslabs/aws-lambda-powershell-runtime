@@ -11,7 +11,13 @@ param (
     [string]$LayerPath = ([System.IO.Path]::Combine($PSScriptRoot, 'layers', 'modulesLayer')),
 
     # The URL to the AWS.Tools zip file.
-    [string]$AWSToolsSource = 'https://sdk-for-net.amazonwebservices.com/ps/v4/latest/AWS.Tools.zip'
+    [string]$AWSToolsSource = 'https://sdk-for-net.amazonwebservices.com/ps/v4/latest/AWS.Tools.zip',
+
+    # The staging path where the AWS Tools for PowerShell will be extracted
+    [string]$ModuleStagingPath = ([System.IO.Path]::Combine($PSScriptRoot, 'layers', 'staging')),
+
+    # Can be used to prevent the downloading and expansions of the AWS.Tools source.
+    [switch]$SkipZipFileExpansion
 )
 
 function Log {
@@ -26,31 +32,40 @@ function Log {
 $ProgressPreference = 'SilentlyContinue'
 Log 'Starting to build the AWS.Tools layer.' -ForegroundColor 'Yellow'
 
+Log "Using the layer path: '$LayerPath'."
+Log "Using the staging path: '$ModuleStagingPath'."
+
 if (Test-Path -Path $LayerPath -PathType Container) {
     $null = Remove-Item -Path $LayerPath -Recurse
 }
 
-$stagePath = Join-Path -Path $LayerPath -ChildPath 'staging'
-Log "Using the staging path: '$stagePath'."
-Log "Using the layer path: '$LayerPath'."
-$LayerPath, $stagePath | ForEach-Object {
+$layerModulePath = Join-Path -Path $LayerPath -ChildPath 'modules'
+$LayerPath, $ModuleStagingPath | ForEach-Object {
     $null = New-Item -Path $_ -ItemType Directory -Force
 }
 
-Log "Downloading the AWS.Tools modules from '$AWSToolsSource'."
-$zipFile = Join-Path -Path $stagePath -ChildPath 'AWS.Tools.zip'
-Invoke-WebRequest -Uri $AWSToolsSource -OutFile $zipFile
+if (-not $SkipZipFileExpansion) {
+    Log "Downloading the AWS.Tools modules from '$AWSToolsSource'."
+    $zipFile = Join-Path -Path $ModuleStagingPath -ChildPath 'AWS.Tools.zip'
+    if (Test-Path -Path $AWSToolsSource -PathType Leaf) {
+        $zipFile = $AWSToolsSource
+    } else {
+        Invoke-WebRequest -Uri $AWSToolsSource -OutFile $zipFile
+    }
 
-Log 'Expanding the AWS.Tools zip file to the staging path.'
-Expand-Archive -Path $zipFile -DestinationPath $stagePath -Force
+    Log 'Expanding the AWS.Tools zip file to the staging path.'
+    Expand-Archive -Path $zipFile -DestinationPath $ModuleStagingPath -ErrorAction SilentlyContinue
+}
 
 $ModuleList | ForEach-Object {
-    Log "Moving the '$_' module to the layer path."
-    $modulePath = Join-Path -Path $stagePath -ChildPath $_
-    if (-not(Test-Path -Path $modulePath -PathType Container)) {
-        throw "Cannot find the module '$_' in the staging path '$stagePath'."
+    Log "Copying the '$_' module to the layer path."
+    $awsModulePath = (Join-Path -Path $ModuleStagingPath -ChildPath $_)
+    if (-not(Test-Path -Path $awsModulePath -PathType Container)) {
+        throw "Cannot find the module '$_' in the staging path '$ModuleStagingPath'."
     }
-    Move-Item -Path $modulePath -Destination $LayerPath -Force
+    $destinationPath = Join-Path -Path $layerModulePath -ChildPath $_
+    $null = New-Item -Path $destinationPath -ItemType Directory
+    Copy-Item -Path (Join-Path -Path $awsModulePath -ChildPath '*') -Destination $destinationPath -Recurse -Force
 }
 
 Log 'Updating the SAM template ContentUri.'
@@ -58,6 +73,6 @@ $samTemplatePath = Join-Path -Path $PSScriptRoot -ChildPath 'template.yml'
 (Get-Content -Path $samTemplatePath -Raw).replace(
     'ContentUri: ./buildlayer', 'ContentUri: ./layers/modulesLayer') | Set-Content -Path $samTemplatePath -Encoding utf8
 
-Remove-Item -Path $stagePath -Recurse -Force
+Remove-Item -Path $ModuleStagingPath -Recurse -Force
 
 Log 'Finished building the AWS.Tools layer.' -ForegroundColor 'Yellow'
