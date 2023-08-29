@@ -30,6 +30,8 @@ Use one of the *"Build"* options, A,B,C, depending on your operating system and 
 
 Build the custom runtime using native Linux or WSL.
 
+*Note:* The `make` package is required for `sam build` to work. When building in Linux environments, including WSL, you may need to install `make` before this command will work.
+
 ```shell
 sam build --parallel
 ```
