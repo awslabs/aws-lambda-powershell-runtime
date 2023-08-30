@@ -1,0 +1,41 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: powershell-layer-PSFalcon
+##########################################################################
+#  Parameters & Globals                                                  #
+##########################################################################
+Globals:
+  Function:
+    Tracing: Active
+    Tags:
+      Application: powershell-layer-PSFalcon
+Resources:
+##########################################################################
+#  Lambda layers                                                         #
+##########################################################################
+  PSFalconLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: PSFalcon
+      Description: Layer containing PSFalcon
+      ContentUri: PSFalcon
+      CompatibleRuntimes:
+        - provided.al2      
+      RetentionPolicy: Delete
+    Metadata:
+      BuildMethod: makefile
+  PSFalconParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: lambda-powershell-PSFalcon-latest-version-arn
+      Description: PSFalcon Layer Name
+      Type: String
+      Value: !Ref PSFalconLayer
+
+##########################################################################
+#  OUTPUTS                                                               #
+##########################################################################
+Outputs:
+  PSFalconLayer:
+    Value: !Ref PSFalconLayer
+    Description: PSFalconLayer Layer ARN
