@@ -24,4 +24,4 @@ $awsToolsBuildScript = [System.IO.Path]::Combine($gitRoot, 'powershell-modules',
 $samTemplatePath = Join-Path -Path $PSScriptRoot -ChildPath 'template.yml'
 (Get-Content -Path $samTemplatePath -Raw).replace(
     'ContentUri: ../../powershell-runtime/source', 'ContentUri: ./layers/runtimeLayer').replace(
-    'ContentUri: ../../powershell-modules/AWSToolsforPowerShell/Demo-AWS.Tools/buildlayer', 'ContentUri: ./layers/modulesLayer') | Set-Content -Path $samTemplatePath -Encoding utf8
+    'ContentUri: ../../powershell-modules/AWSToolsforPowerShell/Demo-AWS.Tools/buildlayer', 'ContentUri: ./layers/modulesLayer') | Set-Content -Path $samTemplatePath -Encoding ascii

@@ -71,7 +71,7 @@ $ModuleList | ForEach-Object {
 Log 'Updating the SAM template ContentUri.'
 $samTemplatePath = Join-Path -Path $PSScriptRoot -ChildPath 'template.yml'
 (Get-Content -Path $samTemplatePath -Raw).replace(
-    'ContentUri: ./buildlayer', 'ContentUri: ./layers/modulesLayer') | Set-Content -Path $samTemplatePath -Encoding utf8
+    'ContentUri: ./buildlayer', 'ContentUri: ./layers/modulesLayer') | Set-Content -Path $samTemplatePath -Encoding ascii
 
 Remove-Item -Path $ModuleStagingPath -Recurse -Force
 

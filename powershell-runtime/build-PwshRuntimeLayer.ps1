@@ -60,7 +60,7 @@ Remove-Item -Path $tarFile -Force
 Log 'Copying additional runtime files, including bootstrap.'
 if (-not(Select-String -Path $moduleFilePath -Pattern 'private:Get-Handler')) {
     Get-ChildItem -Path $privateFunctionPath -Filter '*.ps1' | ForEach-Object {
-        Get-Content $_.FullName | Select-Object -Skip 2 | Out-File -FilePath $moduleFilePath -Append -Encoding utf8
+        Get-Content $_.FullName | Select-Object -Skip 2 | Out-File -FilePath $moduleFilePath -Append -Encoding ascii
     }
     Remove-Item -Path $privateFunctionPath -Force -Recurse
 } else {
@@ -73,6 +73,6 @@ Remove-Item -Path (Join-Path -Path $LayerPath -ChildPath 'Makefile') -ErrorActio
 Log 'Updating the SAM template ContentUri.'
 $samTemplatePath = Join-Path -Path $PSScriptRoot -ChildPath 'template.yml'
 (Get-Content -Path $samTemplatePath -Raw).replace(
-    'ContentUri: ./source', 'ContentUri: ./layers/runtimeLayer') | Set-Content -Path $samTemplatePath -Encoding utf8
+    'ContentUri: ./source', 'ContentUri: ./layers/runtimeLayer') | Set-Content -Path $samTemplatePath -Encoding ascii
 
 Log 'Finished building the PowerShell Runtime layer.' -ForegroundColor 'Yellow'
