@@ -1,5 +1,5 @@
 # PWSH_VERSION is version of PowerShell to download
-PWSH_VERSION ?= 7.2.11
+PWSH_VERSION ?= 7.2.13
 # PWSH_ARCHITECTURE can be 'x64' or 'arm64'
 PWSH_ARCHITECTURE ?= x64
 build-PwshRuntimeLayer:
