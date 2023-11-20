@@ -169,3 +169,25 @@ The runtime can terminate your function because it ran out of time, detected a s
 Your function code can throw an exception or return an error object. Lambda writes the error to CloudWatch Logs and, for synchronous invocations, also returns the error in the function response output.
 
 See the [documentation](https://docs.aws.amazon.com/lambda/latest/dg/powershell-exceptions.html) on how to view Lambda function invocation errors for the PowerShell runtime using the Lambda console and the AWS CLI.
+
+### Provided Runtime options
+
+The runtime supports both the `provided.al2` and `provided.al2023` Lambda runtimes.
+
+#### provided.al2023
+
+To work as expected in the `provided.al2023` runtime, the environment variable `DOTNET_SYSTEM_GLOBALIZATION_INVARIANT` must be set to `1`. This is to prevent the need for installing the `libicu` package. If this is an issue for your environment, either continue using `provided.al2`, or open an issue in this GitHub repository.
+
+If this environment variable is not configured, the following error will likely be shown the your function logs. The error includes a link to a [Microsoft documentation page](https://aka.ms/dotnet-missing-libicu) for more information.
+
+```text
+Process terminated. Couldn't find a valid ICU package installed on the system. Please install libicu (or icu-libs) using your package manager and try again. Alternatively you can set the configuration flag System.Globalization.Invariant to true if you want to run with no globalization support. Please see https://aka.ms/dotnet-missing-libicu for more information.
+at System.Environment.FailFast(System.String)
+at System.Globalization.GlobalizationMode+Settings..cctor()
+at System.Globalization.CultureData.CreateCultureWithInvariantData()
+at System.Globalization.CultureData.get_Invariant()
+at System.Globalization.CultureInfo..cctor()
+at System.Globalization.CultureInfo.get_CurrentUICulture()
+at Microsoft.PowerShell.UnmanagedPSEntry.Start(System.String[], Int32)
+at Microsoft.PowerShell.ManagedPSEntry.Main(System.String[])
+```

@@ -20,13 +20,16 @@ Resources:
         - x86_64
       Description: PowerShell-Lambda-Runtime Demo Function
       CodeUri: function/
-      Runtime: provided.al2
+      Runtime: provided.al2023
       Handler: examplehandler.ps1::handler
       MemorySize: 1024
       Timeout: 100
       Layers:
         - !Ref PwshRuntimeLayer
         - !Ref DemoAWSToolsLayer
+      Environment:
+        Variables:
+          DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: '1'
     Metadata:
       BuildMethod: makefile
 ##########################################################################
@@ -39,6 +42,7 @@ Resources:
       ContentUri: ../../powershell-runtime/source
       CompatibleRuntimes:
         - provided.al2
+        - provided.al2023
       RetentionPolicy: Delete
     Metadata:
       BuildMethod: makefile
@@ -57,6 +61,7 @@ Resources:
       ContentUri: ../../powershell-modules/AWSToolsforPowerShell/Demo-AWS.Tools/buildlayer
       CompatibleRuntimes:
         - provided.al2
+        - provided.al2023
       RetentionPolicy: Delete
     Metadata:
       BuildMethod: makefile

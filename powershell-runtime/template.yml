@@ -15,6 +15,7 @@ Resources:
       ContentUri: ./source
       CompatibleRuntimes:
         - provided.al2
+        - provided.al2023
       RetentionPolicy: Delete
     Metadata:
       BuildMethod: makefile
