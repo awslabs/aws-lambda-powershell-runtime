@@ -39,7 +39,7 @@ Resources:
     Properties:
       Description: PowerShell-Lambda-Runtime Demo Function
       CodeUri: function/
-      Runtime: provided.al2
+      Runtime: provided.al2023
       Handler: Module::demo-s3-lambda-eventbridge::handler
       MemorySize: 1024
       Timeout: 100
@@ -54,6 +54,7 @@ Resources:
       Environment:
         Variables:
           DESTINATION_BUS: !Ref PowerShellEventBus
+          DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: '1'
       Events:
         S3NewObjectEvent:
           Type: S3
@@ -75,6 +76,7 @@ Resources:
       ContentUri: ../../powershell-runtime/source
       CompatibleRuntimes:
         - provided.al2
+        - provided.al2023
       LicenseInfo: 'Available under the MIT-0 license.'
       RetentionPolicy: Delete
     Metadata:
@@ -87,6 +89,7 @@ Resources:
       ContentUri: ../../powershell-modules/AWSToolsforPowerShell/AWS.Tools.S3EventBridge/buildlayer
       CompatibleRuntimes:
         - provided.al2
+        - provided.al2023
       LicenseInfo: 'Available under the MIT-0 license.'
       RetentionPolicy: Delete
     Metadata:
