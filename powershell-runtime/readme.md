@@ -1,6 +1,6 @@
 # PowerShell-runtime
 
-Contains the PowerShell custom runtime based on ````provided.al2```` with a number of deployment methods.
+Contains the PowerShell custom runtime based on ````provided.al2023```` with a number of deployment methods.
 
 Deploy the example [demo-runtime-layer-function](../examples/demo-runtime-layer-function/) to explore how the runtime and PowerShell function work.
 
