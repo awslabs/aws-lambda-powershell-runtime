@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Demo to explore how the PowerShell custom runtime and a Lambda function work.
+##########################################################################
+#  Parameters & Globals                                                  #
+##########################################################################
+Globals:
+  Function:
+    Tracing: Active
+    Tags:
+      Application: demo-container-image-all-aws-sdk
+Resources:
+##########################################################################
+#  Lambda functions                                                      #
+##########################################################################
+  DemoPowerShellFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Architectures:
+        - x86_64
+      Description: PowerShell-Lambda-Runtime Demo Function
+      PackageType: Image
+      MemorySize: 1024
+      Timeout: 100
+      Environment:
+        Variables:
+          DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: '1'
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: .
+      DockerTag: demo-container-image-all-aws-sdk
+##########################################################################
+#  OUTPUTS                                                               #
+##########################################################################
+Outputs:
+  DemoPowerShellFunction:
+    Value: !Ref DemoPowerShellFunction
+    Description: PowerShell Lambda Function
