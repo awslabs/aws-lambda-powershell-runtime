@@ -43,14 +43,13 @@ aws ecr get-login-password --region <region> | docker login --username AWS --pas
 aws ecr create-repository --repository-name demo-container-image-all-aws-sdk
 ```
 
-5. Build the Docker image. Rename the image name in the following steps from `demo-container-image-all-aws-sdk:latest` if required.
+5. Build the Docker image. Rename the image name in the following steps from `demo-container-image-all-aws-sdk:latest` if required. Replace the `<region>` and `<account>` values.
 ```shell
-docker build -t demo-container-image-all-aws-sdk:latest .
+docker build -t <account>.dkr.ecr.<region>.amazonaws.com/demo-container-image-all-aws-sdk:latest .
 ```
 
-6. Tag and push the Docker image. Replace the `<region>` and `<account>` values.
+6. Push the Docker image. Replace the `<region>` and `<account>` values.
 ```shell
-docker tag demo-container-image-all-aws-sdk:latest <account>.dkr.ecr.<region>.amazonaws.com/demo-container-image-all-aws-sdk:latest
 docker push <account>.dkr.ecr.<region>.amazonaws.com/demo-container-image-all-aws-sdk:latest
 ```
 
