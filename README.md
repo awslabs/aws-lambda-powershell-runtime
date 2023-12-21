@@ -58,6 +58,8 @@ Initial demo application [demo-runtime-layer-function](examples/demo-runtime-lay
 |[demo-runtime-layer-function](examples/demo-runtime-layer-function/)|All-in-one Powershell runtime layer, AWS Tools for PowerShell layer, Lambda function with all three handler options. |
 |[demo-s3-lambda-eventbridge](examples/demo-s3-lambda-eventbridge/)|Demo to show an event-drive application in PowerShell. Copy .CSV file to S3 which triggers PowerShell Lambda function which parses the file. Sends each file line as an event to EventBridge which writes it to CLoudWatch Logs. |
 |[demo-container-image-all-aws-sdk](examples/demo-container-image-all-aws-sdk/)|Demo application to deploy a PowerShell Lambda function using a [container image](https://docs.aws.amazon.com/lambda/latest/dg/images-create.html). The container image can be up to 10Gb in size which allows you to build functions larger than the 256MB limit for .zip archive functions. This allows you to include the entire [AWSTools for PowerShell](https://aws.amazon.com/powershell/) SDK, for example. |
+|[demo-container-images-shared](examples/demo-container-image-all-aws-sdk/)|Demo application to deploy container image Lambda function using separate layers for the PowerShell runtime and entire [AWSTools for PowerShell](https://aws.amazon.com/powershell/) SDK. This allows you to use these shared layers to build multiple Lambda functions. The container image can be up to 10Gb in size which allows you to build functions larger than the 256MB limit for .zip archive functions.  |
+
 
 ## Powershell runtime information
 
