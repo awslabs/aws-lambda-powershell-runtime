@@ -10,3 +10,4 @@ See further instructions within the subfolders
 |:---|:---|
 |[AWSToolsforPowerShell](powershell-modules/AWSToolsforPowerShell/)|AWS Tools for PowerShell |
 |[VMwarePowerCLI](powershell-modules/VMwarePowerCLI/)|VMware PowerCLI|
+|[PSFalcon](powershell-modules/PSFalcon/)|Crowdstrikes PSFalcon|
