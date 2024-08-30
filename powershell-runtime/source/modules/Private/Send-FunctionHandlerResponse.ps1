@@ -14,24 +14,15 @@ function private:Send-FunctionHandlerResponse {
     #>
     [CmdletBinding()]
     param (
+        [Parameter(Position=0)]
+        [System.Net.Http.HttpClient]$private:HttpClient,
+
+        [Parameter(Position=1)]
         $private:InvocationResponse
     )
 
     if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host '[RUNTIME-Send-FunctionHandlerResponse]Start: Send-FunctionHandlerResponse' }
+    $private:uri = "http://$env:AWS_LAMBDA_RUNTIME_API/2018-06-01/runtime/invocation/$env:AWS_LAMBDA_RUNTIME_AWS_REQUEST_ID/response"
 
-    if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host '[RUNTIME-Send-FunctionHandlerResponse]Create POST request to Runtime API' }
-    $private:responseUri = "http://$env:AWS_LAMBDA_RUNTIME_API/2018-06-01/runtime/invocation/$env:AWS_LAMBDA_RUNTIME_AWS_REQUEST_ID/response"
-    $private:responseRequest = [System.Net.WebRequest]::Create($private:responseUri)
-    $private:responseRequest.Headers.Add('User-Agent', "aws-lambda-powershell/$env:POWERSHELL_VERSION")
-    $private:responseRequest.Method = 'POST'
-
-    if (-not([String]::IsNullOrWhiteSpace($private:InvocationResponse))) {
-        if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host '[RUNTIME-Send-FunctionHandlerResponse]Sending POST request to Runtime API' }
-        $private:responseByteArray = [System.Text.Encoding]::UTF8.GetBytes($private:InvocationResponse)
-        $private:responseStream = $private:responseRequest.GetRequestStream()
-        $private:responseStream.Write($private:responseByteArray, 0, $private:responseByteArray.Length)
-    }
-
-    $null = $private:responseRequest.GetResponse()
-    if ($private:responseStream) { $private:responseStream.Dispose() }
+    SendRuntimeApiRequest $private:HttpClient $private:uri $private:InvocationResponse
 }
