@@ -33,5 +33,5 @@ function private:Send-FunctionHandlerError {
         Key = 'Lambda-Runtime-Function-Error-Type'
         Value = '{0}.{1}' -f $private:Exception.CategoryInfo.Category, $private:Exception.CategoryInfo.Reason
     })
-    SendRuntimeApiRequest $private:HttpClient $private:uri $private:body $private:headers
+    _SendRuntimeApiRequest $private:HttpClient $private:uri $private:body $private:headers
 }
