@@ -4,7 +4,7 @@
 #>
 param (
     # The version of PowerShell to use for the runtime
-    [string]$PwshVersion = '7.4.0',
+    [string]$PwshVersion = '7.4.5',
 
     # The desired CPU architecture for the runtime
     [ValidateSet('arm64', 'x64')]

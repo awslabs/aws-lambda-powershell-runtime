@@ -2,7 +2,7 @@
 
 Initial demo application [demo-runtime-layer-function](examples/demo-runtime-layer-function/) uses AWS SAM to deploy the following:
 
-1. PowerShell custom runtime based on ````provided.al2```` as a Lambda layer.
+1. PowerShell custom runtime based on ````provided.al2023```` as a Lambda layer.
 2. Additional Lambda layer including the [AWSTools for PowerShell](https://aws.amazon.com/powershell/) with the following module.
     * ````AWS.Tools.Common````
 3. Both layers store their Amazon Resource Names (ARNs) as parameters in [AWS Systems Manager Parameter Store](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html) which can be referenced in other templates
