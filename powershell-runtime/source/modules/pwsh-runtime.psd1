@@ -7,7 +7,7 @@
 RootModule = 'pwsh-runtime.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.5'
+ModuleVersion = '0.6'
 
 # Supported PSEditions
 CompatiblePSEditions = 'Core'
@@ -65,14 +65,14 @@ PowerShellVersion = '6.0'
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = @(
-    'Set-PSModulePath'
-    'Set-LambdaContext'
     'Get-Handler'
-    'Set-HandlerEnvironmentVariables'
     'Get-LambdaNextInvocation'
     'Invoke-FunctionHandler'
     'Send-FunctionHandlerResponse'
     'Send-FunctionHandlerError'
+    'Set-HandlerEnvironmentVariables'
+    'Set-LambdaContext'
+    'Set-PSModulePath'
 )
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = ''

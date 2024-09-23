@@ -13,6 +13,11 @@ if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host "[RUNTIME-bootstrap]
 if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host '[RUNTIME-bootstrap]Importing runtime module helpers'}
 Import-Module '/opt/modules/pwsh-runtime.psd1'
 
+# Importing .NET class from .cs file to support the script property "RemainingTime" and method "getRemainingTimeInMillis".
+# This is taken from the Lambda .Net runtime LambdaContext code: https://github.com/aws/aws-lambda-dotnet/blob/master/Libraries/src/Amazon.Lambda.Core/ILambdaContext.cs
+if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host '[RUNTIME-bootstrap]Importing .NET class from .cs file to support script properties and method' }
+Add-Type -TypeDefinition ([System.IO.File]::ReadAllText('/opt/PowerShellLambdaContext.cs'))
+
 # Modify $env:PSModulePath to support Lambda paths
 if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host '[RUNTIME-bootstrap]Modify PSModulePath to support Lambda paths'}
 Set-PSModulePath
@@ -35,13 +40,16 @@ switch ($private:handlerArray.handlerType) {
     }
 }
 
+$private:httpClient = [System.Net.Http.HttpClient]::new()
+$private:httpClient.Timeout = [System.Threading.Timeout]::InfiniteTimeSpan
+
 ## Event loop
 # Processes invocation events from Lambda Runtime API in a loop until runtime environment is terminated.
 if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host '[RUNTIME-bootstrap]Start event loop'}
 do {
     # Get /NEXT invocation from AWS Lambda Runtime API.
     if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host '[RUNTIME-bootstrap]Get /NEXT invocation from AWS Lambda Runtime API'}
-    $private:runtimeNextInvocationResponse = Get-LambdaNextInvocation
+    $private:runtimeNextInvocationResponse = Get-LambdaNextInvocation $private:httpClient
 
     # Set default and AWS Lambda specific environment variables for each invocation
     if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host '[RUNTIME-bootstrap]Set default and AWS Lambda specific environment variables for each invocation'}
@@ -58,12 +66,13 @@ do {
 
         # POST function handler response back to Runtime API
         if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host '[RUNTIME-bootstrap]POST function handler response back to Runtime API'}
-        Send-FunctionHandlerResponse $private:InvocationResponse
+
+        Send-FunctionHandlerResponse $private:httpClient $private:InvocationResponse
     }
     catch {
         # POST function invocation error back to Runtime API
         if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host '[RUNTIME-bootstrap]POST function invocation error back to Runtime API'}
-        Send-FunctionHandlerError $_
+        Send-FunctionHandlerError $private:httpClient $_
     }
 
     # Cleanup
