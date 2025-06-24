@@ -1,0 +1,49 @@
+function private:Import-ModulePackage {
+    <#
+    .SYNOPSIS
+        Installs compressed PowerShell modules from NuGet packages (*.nupkg)
+    .DESCRIPTION
+        Installs compressed PowerShell modules from NuGet packages (*.nupkg) into a subdirectory of /tmp.
+
+        This folder is later added to $env:PSModulePath, before user code runs, if module packages existed.
+    .NOTES
+        These packages should match the NuPkg format used by PSResourceGet or PowerShellGet.
+
+        Packages can be exported either by:
+        * Downloading the .nupkg files directly from an upstream source (e.g. PowerShell Gallery)
+        * Using the -AsNuPkg parameter on Save-PSResource in the Microsoft.PowerShell.PSResourceGet module.
+
+        Module packages are imported from two locations, from lowest to highest precedence:
+        * /opt/module-nupkgs/ (Combined Lambda layer directory)
+        * $Env:LAMBDA_TASK_ROOT/module-nupkgs/ (Lambda Function Package deployment directory)
+    #>
+    $SearchPaths = @{
+        Layer = "/opt/module-nupkgs/*.nupkg"
+        Root = (Join-Path $env:LAMBDA_TASK_ROOT -ChildPath "module-nupkgs" -AdditionalChildPath "*.nupkg")
+    }
+
+    If ($SearchPaths.Values | ? { Test-Path $_ }) {
+        $UnpackDirectory = '/tmp/powershell-custom-runtime-unpacked-modules/nupkgs/'
+        if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host '[RUNTIME-bootstrap]Creating unpack directory for individual module packages' }
+        New-Item -ItemType Directory -Path $UnpackDirectory -Force
+        $SearchPaths.GetEnumerator() | ? { Test-Path $_.Value } | ForEach-Object {
+            $PackageDirectory = Split-Path $_.Value -Parent
+            if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host "[RUNTIME-bootstrap]Importing module packages from $PackageDirectory" }
+            $RepositoryName = "Lambda-Local-$($_.Key)"
+            if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host "[RUNTIME-bootstrap]Registering local package repository $RepositoryName" }
+            Register-PSResourceRepository -Name $RepositoryName -Uri $PackageDirectory -Trusted -Priority 1
+            if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host "[RUNTIME-bootstrap]Enumerating packages in $PackageDirectory (PSResource repository $RepositoryName)" }
+            Find-PSResource -Name * -Repository $RepositoryName | ForEach-Object -Parallel {
+                if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host "[RUNTIME-bootstrap]Saving package $($_.Name) version $($_.Version) (PSResource repository $($using:RepositoryName))" }
+                $_ | Save-PSResource -SkipDependencyCheck -Path $using:PackageDirectory -Quiet -AcceptLicense -Confirm:$false
+            }
+            if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host "[RUNTIME-bootstrap]Registering local package repository $RepositoryName" }
+            Unregister-PSResourceRepository -Name $RepositoryName -Confirm:$false
+        }
+        if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host '[RUNTIME-bootstrap]Archive unpack complete' }
+    }
+    else {
+        if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host '[RUNTIME-bootstrap]No module archives detected; nothing to do.' }
+    }
+
+}
