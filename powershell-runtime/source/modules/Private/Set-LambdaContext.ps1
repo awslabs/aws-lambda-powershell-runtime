@@ -4,10 +4,12 @@
 function Private:Set-LambdaContext {
     <#
         .SYNOPSIS
-            Captures the content of the provided Lambda Context variable.
+            Creates a Lambda context object from environment variables.
 
         .DESCRIPTION
-            Captures the content of the provided Lambda Context variable.
+            Creates a Lambda context object populated with AWS Lambda runtime environment variables.
+            The PowerShellLambdaContext C# class must be loaded before calling this function.
+            In the Lambda runtime, this is handled by the bootstrap script.
     #>
 
     if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host '[RUNTIME-Set-LambdaContext]Start: Set-LambdaContext' }
