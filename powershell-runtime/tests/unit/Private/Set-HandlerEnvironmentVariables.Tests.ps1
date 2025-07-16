@@ -107,12 +107,12 @@ Describe "Set-HandlerEnvironmentVariables" {
         BeforeEach {
             # Clear Lambda environment variables to test setting
             $script:OriginalLambdaVars = @{
-                'AWS_LAMBDA_RUNTIME_AWS_REQUEST_ID' = $env:AWS_LAMBDA_RUNTIME_AWS_REQUEST_ID
-                'AWS_LAMBDA_RUNTIME_CLIENT_CONTEXT' = $env:AWS_LAMBDA_RUNTIME_CLIENT_CONTEXT
-                'AWS_LAMBDA_RUNTIME_COGNITO_IDENTITY' = $env:AWS_LAMBDA_RUNTIME_COGNITO_IDENTITY
-                'AWS_LAMBDA_RUNTIME_DEADLINE_MS' = $env:AWS_LAMBDA_RUNTIME_DEADLINE_MS
+                'AWS_LAMBDA_RUNTIME_AWS_REQUEST_ID'       = $env:AWS_LAMBDA_RUNTIME_AWS_REQUEST_ID
+                'AWS_LAMBDA_RUNTIME_CLIENT_CONTEXT'       = $env:AWS_LAMBDA_RUNTIME_CLIENT_CONTEXT
+                'AWS_LAMBDA_RUNTIME_COGNITO_IDENTITY'     = $env:AWS_LAMBDA_RUNTIME_COGNITO_IDENTITY
+                'AWS_LAMBDA_RUNTIME_DEADLINE_MS'          = $env:AWS_LAMBDA_RUNTIME_DEADLINE_MS
                 'AWS_LAMBDA_RUNTIME_INVOKED_FUNCTION_ARN' = $env:AWS_LAMBDA_RUNTIME_INVOKED_FUNCTION_ARN
-                '_X_AMZN_TRACE_ID' = $env:_X_AMZN_TRACE_ID
+                '_X_AMZN_TRACE_ID'                        = $env:_X_AMZN_TRACE_ID
             }
 
             # Clear all Lambda environment variables
@@ -125,12 +125,12 @@ Describe "Set-HandlerEnvironmentVariables" {
 
             # Create complete test headers
             $script:TestHeaders = @{
-                'Lambda-Runtime-Aws-Request-Id' = 'test-request-456'
-                'Lambda-Runtime-Client-Context' = 'test-client-context'
-                'Lambda-Runtime-Cognito-Identity' = 'test-cognito-identity'
-                'Lambda-Runtime-Deadline-Ms' = '1640995200000'
+                'Lambda-Runtime-Aws-Request-Id'       = 'test-request-456'
+                'Lambda-Runtime-Client-Context'       = 'test-client-context'
+                'Lambda-Runtime-Cognito-Identity'     = 'test-cognito-identity'
+                'Lambda-Runtime-Deadline-Ms'          = '1640995200000'
                 'Lambda-Runtime-Invoked-Function-Arn' = 'arn:aws:lambda:us-east-1:123456789012:function:test-function'
-                'Lambda-Runtime-Trace-Id' = 'Root=1-5e1b4151-5ac6c58b08bd4e9c9c6b4e8a'
+                'Lambda-Runtime-Trace-Id'             = 'Root=1-5e1b4151-5ac6c58b08bd4e9c9c6b4e8a'
             }
         }
 
@@ -174,12 +174,12 @@ Describe "Set-HandlerEnvironmentVariables" {
         BeforeEach {
             # Store original values for restoration
             $script:OriginalLambdaVars = @{
-                'AWS_LAMBDA_RUNTIME_AWS_REQUEST_ID' = $env:AWS_LAMBDA_RUNTIME_AWS_REQUEST_ID
-                'AWS_LAMBDA_RUNTIME_CLIENT_CONTEXT' = $env:AWS_LAMBDA_RUNTIME_CLIENT_CONTEXT
-                'AWS_LAMBDA_RUNTIME_COGNITO_IDENTITY' = $env:AWS_LAMBDA_RUNTIME_COGNITO_IDENTITY
-                'AWS_LAMBDA_RUNTIME_DEADLINE_MS' = $env:AWS_LAMBDA_RUNTIME_DEADLINE_MS
+                'AWS_LAMBDA_RUNTIME_AWS_REQUEST_ID'       = $env:AWS_LAMBDA_RUNTIME_AWS_REQUEST_ID
+                'AWS_LAMBDA_RUNTIME_CLIENT_CONTEXT'       = $env:AWS_LAMBDA_RUNTIME_CLIENT_CONTEXT
+                'AWS_LAMBDA_RUNTIME_COGNITO_IDENTITY'     = $env:AWS_LAMBDA_RUNTIME_COGNITO_IDENTITY
+                'AWS_LAMBDA_RUNTIME_DEADLINE_MS'          = $env:AWS_LAMBDA_RUNTIME_DEADLINE_MS
                 'AWS_LAMBDA_RUNTIME_INVOKED_FUNCTION_ARN' = $env:AWS_LAMBDA_RUNTIME_INVOKED_FUNCTION_ARN
-                '_X_AMZN_TRACE_ID' = $env:_X_AMZN_TRACE_ID
+                '_X_AMZN_TRACE_ID'                        = $env:_X_AMZN_TRACE_ID
             }
 
             # Clear all Lambda environment variables
@@ -215,7 +215,7 @@ Describe "Set-HandlerEnvironmentVariables" {
             # Arrange
             $headersWithoutRequestId = @{
                 'Lambda-Runtime-Deadline-Ms' = '1640995200000'
-                'Lambda-Runtime-Trace-Id' = 'Root=1-5e1b4151-5ac6c58b08bd4e9c9c6b4e8a'
+                'Lambda-Runtime-Trace-Id'    = 'Root=1-5e1b4151-5ac6c58b08bd4e9c9c6b4e8a'
             }
 
             # Act
@@ -231,12 +231,12 @@ Describe "Set-HandlerEnvironmentVariables" {
         It "Should handle null header values" {
             # Arrange
             $headersWithNullValues = @{
-                'Lambda-Runtime-Aws-Request-Id' = $null
-                'Lambda-Runtime-Client-Context' = $null
-                'Lambda-Runtime-Cognito-Identity' = $null
-                'Lambda-Runtime-Deadline-Ms' = '1640995200000'
+                'Lambda-Runtime-Aws-Request-Id'       = $null
+                'Lambda-Runtime-Client-Context'       = $null
+                'Lambda-Runtime-Cognito-Identity'     = $null
+                'Lambda-Runtime-Deadline-Ms'          = '1640995200000'
                 'Lambda-Runtime-Invoked-Function-Arn' = $null
-                'Lambda-Runtime-Trace-Id' = $null
+                'Lambda-Runtime-Trace-Id'             = $null
             }
 
             # Act
@@ -256,23 +256,23 @@ Describe "Set-HandlerEnvironmentVariables" {
         It "Should handle empty string header values" {
             # Arrange
             $headersWithEmptyValues = @{
-                'Lambda-Runtime-Aws-Request-Id' = ''
-                'Lambda-Runtime-Client-Context' = ''
-                'Lambda-Runtime-Cognito-Identity' = 'valid-identity'
-                'Lambda-Runtime-Deadline-Ms' = ''
+                'Lambda-Runtime-Aws-Request-Id'       = ''
+                'Lambda-Runtime-Client-Context'       = ''
+                'Lambda-Runtime-Cognito-Identity'     = 'valid-identity'
+                'Lambda-Runtime-Deadline-Ms'          = ''
                 'Lambda-Runtime-Invoked-Function-Arn' = ''
-                'Lambda-Runtime-Trace-Id' = ''
+                'Lambda-Runtime-Trace-Id'             = ''
             }
 
             # Act
             pwsh-runtime\Set-HandlerEnvironmentVariables $headersWithEmptyValues
 
             # Assert - Empty strings should be set as empty environment variables
-            $env:AWS_LAMBDA_RUNTIME_AWS_REQUEST_ID | Should -Be ''
-            $env:AWS_LAMBDA_RUNTIME_CLIENT_CONTEXT | Should -Be ''
-            $env:AWS_LAMBDA_RUNTIME_DEADLINE_MS | Should -Be ''
-            $env:AWS_LAMBDA_RUNTIME_INVOKED_FUNCTION_ARN | Should -Be ''
-            $env:_X_AMZN_TRACE_ID | Should -Be ''
+            $env:AWS_LAMBDA_RUNTIME_AWS_REQUEST_ID | Should -BeNullOrEmpty
+            $env:AWS_LAMBDA_RUNTIME_CLIENT_CONTEXT | Should -BeNullOrEmpty
+            $env:AWS_LAMBDA_RUNTIME_DEADLINE_MS | Should -BeNullOrEmpty
+            $env:AWS_LAMBDA_RUNTIME_INVOKED_FUNCTION_ARN | Should -BeNullOrEmpty
+            $env:_X_AMZN_TRACE_ID | Should -BeNullOrEmpty
 
             # Non-empty value should be set correctly
             $env:AWS_LAMBDA_RUNTIME_COGNITO_IDENTITY | Should -Be 'valid-identity'
@@ -281,12 +281,12 @@ Describe "Set-HandlerEnvironmentVariables" {
         It "Should handle headers with unexpected data types" {
             # Arrange
             $headersWithMixedTypes = @{
-                'Lambda-Runtime-Aws-Request-Id' = 12345  # Number instead of string
-                'Lambda-Runtime-Client-Context' = @{ nested = 'object' }  # Object instead of string
-                'Lambda-Runtime-Cognito-Identity' = $true  # Boolean instead of string
-                'Lambda-Runtime-Deadline-Ms' = '1640995200000'  # Valid string
+                'Lambda-Runtime-Aws-Request-Id'       = 12345  # Number instead of string
+                'Lambda-Runtime-Client-Context'       = @{ nested = 'object' }  # Object instead of string
+                'Lambda-Runtime-Cognito-Identity'     = $true  # Boolean instead of string
+                'Lambda-Runtime-Deadline-Ms'          = '1640995200000'  # Valid string
                 'Lambda-Runtime-Invoked-Function-Arn' = @('array', 'value')  # Array instead of string
-                'Lambda-Runtime-Trace-Id' = 'valid-trace-id'  # Valid string
+                'Lambda-Runtime-Trace-Id'             = 'valid-trace-id'  # Valid string
             }
 
             # Act & Assert - Should not throw even with unexpected types
@@ -303,12 +303,12 @@ Describe "Set-HandlerEnvironmentVariables" {
         BeforeEach {
             # Store original values for restoration
             $script:OriginalLambdaVars = @{
-                'AWS_LAMBDA_RUNTIME_AWS_REQUEST_ID' = $env:AWS_LAMBDA_RUNTIME_AWS_REQUEST_ID
-                'AWS_LAMBDA_RUNTIME_CLIENT_CONTEXT' = $env:AWS_LAMBDA_RUNTIME_CLIENT_CONTEXT
-                'AWS_LAMBDA_RUNTIME_COGNITO_IDENTITY' = $env:AWS_LAMBDA_RUNTIME_COGNITO_IDENTITY
-                'AWS_LAMBDA_RUNTIME_DEADLINE_MS' = $env:AWS_LAMBDA_RUNTIME_DEADLINE_MS
+                'AWS_LAMBDA_RUNTIME_AWS_REQUEST_ID'       = $env:AWS_LAMBDA_RUNTIME_AWS_REQUEST_ID
+                'AWS_LAMBDA_RUNTIME_CLIENT_CONTEXT'       = $env:AWS_LAMBDA_RUNTIME_CLIENT_CONTEXT
+                'AWS_LAMBDA_RUNTIME_COGNITO_IDENTITY'     = $env:AWS_LAMBDA_RUNTIME_COGNITO_IDENTITY
+                'AWS_LAMBDA_RUNTIME_DEADLINE_MS'          = $env:AWS_LAMBDA_RUNTIME_DEADLINE_MS
                 'AWS_LAMBDA_RUNTIME_INVOKED_FUNCTION_ARN' = $env:AWS_LAMBDA_RUNTIME_INVOKED_FUNCTION_ARN
-                '_X_AMZN_TRACE_ID' = $env:_X_AMZN_TRACE_ID
+                '_X_AMZN_TRACE_ID'                        = $env:_X_AMZN_TRACE_ID
             }
         }
 
@@ -324,16 +324,16 @@ Describe "Set-HandlerEnvironmentVariables" {
             $firstHeaders = @{
                 'Lambda-Runtime-Aws-Request-Id' = 'first-request-123'
                 'Lambda-Runtime-Client-Context' = 'first-context'
-                'Lambda-Runtime-Deadline-Ms' = '1640995200000'
-                'Lambda-Runtime-Trace-Id' = 'first-trace-id'
+                'Lambda-Runtime-Deadline-Ms'    = '1640995200000'
+                'Lambda-Runtime-Trace-Id'       = 'first-trace-id'
             }
 
             # Second invocation with different values
             $secondHeaders = @{
                 'Lambda-Runtime-Aws-Request-Id' = 'second-request-456'
                 'Lambda-Runtime-Client-Context' = 'second-context'
-                'Lambda-Runtime-Deadline-Ms' = '1640995300000'
-                'Lambda-Runtime-Trace-Id' = 'second-trace-id'
+                'Lambda-Runtime-Deadline-Ms'    = '1640995300000'
+                'Lambda-Runtime-Trace-Id'       = 'second-trace-id'
             }
 
             # Act - First invocation
@@ -363,18 +363,18 @@ Describe "Set-HandlerEnvironmentVariables" {
         It "Should clear previous values when new headers are missing" {
             # Arrange - First invocation with all headers
             $firstHeaders = @{
-                'Lambda-Runtime-Aws-Request-Id' = 'first-request-123'
-                'Lambda-Runtime-Client-Context' = 'first-context'
-                'Lambda-Runtime-Cognito-Identity' = 'first-identity'
-                'Lambda-Runtime-Deadline-Ms' = '1640995200000'
+                'Lambda-Runtime-Aws-Request-Id'       = 'first-request-123'
+                'Lambda-Runtime-Client-Context'       = 'first-context'
+                'Lambda-Runtime-Cognito-Identity'     = 'first-identity'
+                'Lambda-Runtime-Deadline-Ms'          = '1640995200000'
                 'Lambda-Runtime-Invoked-Function-Arn' = 'first-arn'
-                'Lambda-Runtime-Trace-Id' = 'first-trace-id'
+                'Lambda-Runtime-Trace-Id'             = 'first-trace-id'
             }
 
             # Second invocation with only some headers
             $secondHeaders = @{
                 'Lambda-Runtime-Aws-Request-Id' = 'second-request-456'
-                'Lambda-Runtime-Deadline-Ms' = '1640995300000'
+                'Lambda-Runtime-Deadline-Ms'    = '1640995300000'
             }
 
             # Act - First invocation
@@ -437,7 +437,7 @@ Describe "Set-HandlerEnvironmentVariables" {
             # Create test headers
             $script:TestHeaders = @{
                 'Lambda-Runtime-Aws-Request-Id' = 'verbose-test-123'
-                'Lambda-Runtime-Deadline-Ms' = '1640995200000'
+                'Lambda-Runtime-Deadline-Ms'    = '1640995200000'
             }
         }
 
@@ -479,11 +479,6 @@ Describe "Set-HandlerEnvironmentVariables" {
             # Restore original values
             $env:AWS_LAMBDA_RUNTIME_AWS_REQUEST_ID = $script:OriginalRequestId
         }
-
-        # It "Should require Headers parameter" {
-        #     # Act & Assert - Should throw when Headers parameter is missing
-        #     { pwsh-runtime\Set-HandlerEnvironmentVariables } | Should -Throw -ExpectedMessage "*Headers*"
-        # }
 
         It "Should accept hashtable for Headers parameter" {
             # Arrange

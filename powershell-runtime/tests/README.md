@@ -58,44 +58,75 @@ Test utilities and helpers support the test suite:
 ```powershell
 cd powershell-runtime/tests/
 
-# Run all tests (default: fast source file testing)
-pwsh -NoProfile -Command "& ./Invoke-Tests.ps1"
+# Run all tests (default: source file testing for fast development)
+pwsh -NoProfile -Command "& './Invoke-Tests.ps1'"
 
-# Run only unit tests (default: fast source file testing)
-pwsh -NoProfile -Command "& ./Invoke-Tests.ps1 -TestType Unit"
+# Run only unit tests
+pwsh -NoProfile -Command "& './Invoke-Tests.ps1' -TestType Unit"
 
-# Run unit tests against built module (validation testing)
-pwsh -NoProfile -Command "& ./Invoke-Tests.ps1 -TestType Unit -TestBuiltModule"
+# Run only build tests
+pwsh -NoProfile -Command "& './Invoke-Tests.ps1' -TestType Build"
 
-# Run only helper tests
-pwsh -NoProfile -Command "& ./Invoke-Tests.ps1 -Path './helpers"
+# Run tests against built module (validation testing)
+pwsh -NoProfile -Command "& './Invoke-Tests.ps1' -TestBuiltModule"
 
-# Run with code coverage (default: source file testing)
-pwsh -NoProfile -Command "& ./Invoke-Tests.ps1 -Coverage"
+# Run with code coverage analysis
+pwsh -NoProfile -Command "& './Invoke-Tests.ps1' -Coverage"
 
 # Run with code coverage against built module
-pwsh -NoProfile -Command "& ./Invoke-Tests.ps1 -Coverage -TestBuiltModule"
+pwsh -NoProfile -Command "& './Invoke-Tests.ps1' -Coverage -TestBuiltModule"
 
-# Run in CI mode (automatically uses built module for validation)
-pwsh -NoProfile -Command "& ./Invoke-Tests.ps1 -CI"
+# Run in CI mode with full validation
+pwsh -NoProfile -Command "& './Invoke-Tests.ps1' -CI"
 
-# Run specific test files (default: source file testing)
-pwsh -NoProfile -Command "& ./Invoke-Tests.ps1 -Path './unit/Private/Get-Handler.Tests.ps1'"
+# Run specific test files
+pwsh -NoProfile -Command "& './Invoke-Tests.ps1' -Path './unit/Private/Get-Handler.Tests.ps1'"
 
-# Run with detailed output for debugging
-pwsh -NoProfile -Command "& ./Invoke-Tests.ps1 -DetailedOutput"
+# Run with detailed Pester output for debugging
+pwsh -NoProfile -Command "& './Invoke-Tests.ps1' -DetailedOutput"
+
+# Run with specific output format
+pwsh -NoProfile -Command "& './Invoke-Tests.ps1' -OutputFormat NUnitXml"
 ```
 
-### Test Types
+### Available Parameters
+
+The `Invoke-Tests.ps1` script supports the following parameters:
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `TestType` | String | 'All' | Test category to run: 'All', 'Unit', 'Build' |
+| `Path` | String[] | - | Specific test files or directories to run |
+| `TestBuiltModule` | Switch | False | Test against built module instead of source files |
+| `CI` | Switch | False | Enable CI mode with enhanced validation and cleanup |
+| `Coverage` | Switch | False | Enable code coverage analysis with JaCoCo output |
+| `OutputFormat` | String | 'Console' | Test result format: 'Console', 'NUnitXml', 'JUnitXml' |
+| `DetailedOutput` | Switch | False | Enable detailed Pester output for debugging |
+
+### Test Types and Execution Modes
+
+#### Test Categories
 
 *   **Unit Tests**: Test individual functions and components in isolation using the TestLambdaRuntimeServer for HTTP API calls
 *   **Build Tests**: Test build scripts and deployment processes including PowerShell runtime download and module merging
 *   **Helper Tests**: Test the testing infrastructure itself (test utilities, assertion helpers, test server)
 
-### Test Execution Modes
+#### Execution Modes
 
-*   **Default (Source Files)**: Fast testing for local development
-*   **Built Module (`-TestBuiltModule`)**: Validation testing for CI/CD
+The test runner supports two execution modes:
+
+*   **Source Mode (Default)**: Tests source files directly for fast development iteration
+    *   Uses individual source files from `source/modules/`
+    *   Faster execution, ideal for development
+    *   Coverage analysis includes source files
+    *   Command: `./Invoke-Tests.ps1`
+
+*   **Built Module Mode**: Tests the built/merged module for validation
+    *   Uses the built module from `layers/runtimeLayer/modules/pwsh-runtime.psm1`
+    *   Slower execution, validates final deployment artifact
+    *   Coverage analysis includes the built module
+    *   Command: `./Invoke-Tests.ps1 -TestBuiltModule`
+    *   Automatically builds the module if needed
 
 ## Test Configuration
 

@@ -1,0 +1,78 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+#
+# https://github.com/microsoft/action-psscriptanalyzer
+# For more information on PSScriptAnalyzer in general, see
+# https://github.com/PowerShell/PSScriptAnalyzer
+
+name: pwsh-runtime-unit-tests
+
+on:
+  push:
+    branches: [main, "feature/**", "fix/**", "chore/**"]
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write # Required for test reporter to comment on PRs
+  actions: read # Required for test reporter to read workflow runs
+  security-events: write # Required for SARIF upload to GitHub Security tab
+
+jobs:
+  pwsh-runtime-unit-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Dependency Review
+        uses: actions/dependency-review-action@72eb03d02c7872a771aacd928f3123ac62ad6d3a # v4.3.3
+        if: github.event_name == 'pull_request'
+
+      - name: Run Build Tests
+        shell: pwsh
+        run: |
+          cd powershell-runtime
+          pwsh -NoProfile -Command "& './tests/Invoke-Tests.ps1' -CI -TestType Build"
+
+      - name: Run Unit Tests
+        shell: pwsh
+        run: |
+          cd powershell-runtime
+          pwsh -NoProfile -Command "& './tests/Invoke-Tests.ps1' -CI -TestType Unit"
+
+      - name: Run PowerShell Security Analysis
+        uses: microsoft/psscriptanalyzer-action@6b2948b1944407914a58661c49941824d149734f # v1.1
+        with:
+          path: ./powershell-runtime/source
+          recurse: true
+          output: psscriptanalyzer-results.sarif
+          excludeRule: '"PSAvoidUsingWriteHost","PSUseSingularNouns"' # PSUseSingularNouns is temporary until a runtime function is renamed
+
+      - name: Upload PowerShell Analysis Results
+        uses: github/codeql-action/upload-sarif@e2b3eafc8d227b0241d48be5f425d47c2d750a13 # v3.26.10
+        if: always()
+        with:
+          sarif_file: psscriptanalyzer-results.sarif
+          category: powershell-analysis
+
+      - name: Upload Test Results
+        uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4.4.0
+        if: always()
+        with:
+          name: test-results-${{ github.event.number || github.run_number }}
+          path: |
+            powershell-runtime/TestResults.xml
+            powershell-runtime/CodeCoverage.xml
+            psscriptanalyzer-results.sarif
+          retention-days: 30
