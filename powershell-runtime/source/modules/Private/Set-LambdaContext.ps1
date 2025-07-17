@@ -18,7 +18,7 @@ function Private:Set-LambdaContext {
     $private:LambdaContext = [Amazon.Lambda.PowerShell.Internal.LambdaContext]::new(
         $env:AWS_LAMBDA_FUNCTION_NAME,
         $env:AWS_LAMBDA_FUNCTION_VERSION,
-        $env:AWS_LAMBDA_RUNTIME_INVOKE_FUNCTION_ARN,
+        $env:AWS_LAMBDA_RUNTIME_INVOKED_FUNCTION_ARN,
         [int]$env:AWS_LAMBDA_FUNCTION_MEMORY_SIZE,
         $env:AWS_LAMBDA_RUNTIME_AWS_REQUEST_ID,
         $env:AWS_LAMBDA_LOG_GROUP_NAME,

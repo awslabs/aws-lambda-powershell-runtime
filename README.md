@@ -28,7 +28,12 @@ This runtime uses Lambda's [custom runtime](https://docs.aws.amazon.com/lambda/l
 
 ### Testing
 
-The runtime includes comprehensive unit tests. See [powershell-runtime/tests/README.md](powershell-runtime/tests/README.md) for testing documentation and commands.
+The runtime includes unit tests and integration tests:
+
+* **Unit Tests**: Automated tests covering runtime functions and build processes
+* **Integration Tests**: Manual tests with real AWS Lambda functions for end-to-end validation
+
+See [powershell-runtime/tests/README.md](powershell-runtime/tests/README.md) for testing documentation and commands.
 
 ## Building and Deploying
 

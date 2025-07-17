@@ -47,16 +47,16 @@ Describe "Set-LambdaContext" {
         BeforeEach {
             # Set up valid environment variables for Lambda context
             Set-TestEnvironmentVariables -Variables @{
-                'AWS_LAMBDA_FUNCTION_NAME'               = 'test-function'
-                'AWS_LAMBDA_FUNCTION_VERSION'            = '1.0'
-                'AWS_LAMBDA_RUNTIME_INVOKE_FUNCTION_ARN' = 'arn:aws:lambda:us-east-1:123456789012:function:test-function'
-                'AWS_LAMBDA_FUNCTION_MEMORY_SIZE'        = '512'
-                'AWS_LAMBDA_RUNTIME_AWS_REQUEST_ID'      = 'test-request-id-12345'
-                'AWS_LAMBDA_LOG_GROUP_NAME'              = '/aws/lambda/test-function'
-                'AWS_LAMBDA_LOG_STREAM_NAME'             = '2023/01/01/[$LATEST]abcdef123456'
-                'AWS_LAMBDA_RUNTIME_COGNITO_IDENTITY'    = 'test-cognito-identity'
-                'AWS_LAMBDA_RUNTIME_CLIENT_CONTEXT'      = 'test-client-context'
-                'AWS_LAMBDA_RUNTIME_DEADLINE_MS'         = ([DateTimeOffset]::UtcNow.AddMinutes(5).ToUnixTimeMilliseconds()).ToString()
+                'AWS_LAMBDA_FUNCTION_NAME'                = 'test-function'
+                'AWS_LAMBDA_FUNCTION_VERSION'             = '1.0'
+                'AWS_LAMBDA_RUNTIME_INVOKED_FUNCTION_ARN' = 'arn:aws:lambda:us-east-1:123456789012:function:test-function'
+                'AWS_LAMBDA_FUNCTION_MEMORY_SIZE'         = '512'
+                'AWS_LAMBDA_RUNTIME_AWS_REQUEST_ID'       = 'test-request-id-12345'
+                'AWS_LAMBDA_LOG_GROUP_NAME'               = '/aws/lambda/test-function'
+                'AWS_LAMBDA_LOG_STREAM_NAME'              = '2023/01/01/[$LATEST]abcdef123456'
+                'AWS_LAMBDA_RUNTIME_COGNITO_IDENTITY'     = 'test-cognito-identity'
+                'AWS_LAMBDA_RUNTIME_CLIENT_CONTEXT'       = 'test-client-context'
+                'AWS_LAMBDA_RUNTIME_DEADLINE_MS'          = ([DateTimeOffset]::UtcNow.AddMinutes(5).ToUnixTimeMilliseconds()).ToString()
             }
         }
 
@@ -84,7 +84,8 @@ Describe "Set-LambdaContext" {
 
             # Assert - Note: There's a bug in the C# code where InvokedFunctionArn is set to FunctionName instead of the ARN
             # This test documents the current behavior
-            $result.InvokedFunctionArn | Should -Be 'test-function'
+            Write-Verbose $result.InvokedFunctionArn -Verbose
+            $result.InvokedFunctionArn | Should -Be 'arn:aws:lambda:us-east-1:123456789012:function:test-function'
         }
 
         It "Should create functional RemainingTime property" {
@@ -136,16 +137,16 @@ Describe "Set-LambdaContext" {
         It "Should handle null/empty environment variables gracefully" {
             # Arrange - Set some variables to null/empty
             Set-TestEnvironmentVariables -Variables @{
-                'AWS_LAMBDA_FUNCTION_NAME'               = 'test-function'
-                'AWS_LAMBDA_FUNCTION_VERSION'            = ''
-                'AWS_LAMBDA_RUNTIME_INVOKE_FUNCTION_ARN' = $null
-                'AWS_LAMBDA_FUNCTION_MEMORY_SIZE'        = '256'
-                'AWS_LAMBDA_RUNTIME_AWS_REQUEST_ID'      = 'test-request'
-                'AWS_LAMBDA_LOG_GROUP_NAME'              = $null
-                'AWS_LAMBDA_LOG_STREAM_NAME'             = ''
-                'AWS_LAMBDA_RUNTIME_COGNITO_IDENTITY'    = $null
-                'AWS_LAMBDA_RUNTIME_CLIENT_CONTEXT'      = $null
-                'AWS_LAMBDA_RUNTIME_DEADLINE_MS'         = ([DateTimeOffset]::UtcNow.AddMinutes(1).ToUnixTimeMilliseconds()).ToString()
+                'AWS_LAMBDA_FUNCTION_NAME'                = 'test-function'
+                'AWS_LAMBDA_FUNCTION_VERSION'             = ''
+                'AWS_LAMBDA_RUNTIME_INVOKED_FUNCTION_ARN' = $null
+                'AWS_LAMBDA_FUNCTION_MEMORY_SIZE'         = '256'
+                'AWS_LAMBDA_RUNTIME_AWS_REQUEST_ID'       = 'test-request'
+                'AWS_LAMBDA_LOG_GROUP_NAME'               = $null
+                'AWS_LAMBDA_LOG_STREAM_NAME'              = ''
+                'AWS_LAMBDA_RUNTIME_COGNITO_IDENTITY'     = $null
+                'AWS_LAMBDA_RUNTIME_CLIENT_CONTEXT'       = $null
+                'AWS_LAMBDA_RUNTIME_DEADLINE_MS'          = ([DateTimeOffset]::UtcNow.AddMinutes(1).ToUnixTimeMilliseconds()).ToString()
             }
 
             # Act
@@ -164,16 +165,16 @@ Describe "Set-LambdaContext" {
         It "Should handle different memory sizes correctly" {
             # Arrange
             Set-TestEnvironmentVariables -Variables @{
-                'AWS_LAMBDA_FUNCTION_NAME'               = 'memory-test'
-                'AWS_LAMBDA_FUNCTION_VERSION'            = '2.0'
-                'AWS_LAMBDA_RUNTIME_INVOKE_FUNCTION_ARN' = 'arn:aws:lambda:us-west-2:123456789012:function:memory-test'
-                'AWS_LAMBDA_FUNCTION_MEMORY_SIZE'        = '1024'
-                'AWS_LAMBDA_RUNTIME_AWS_REQUEST_ID'      = 'memory-test-request'
-                'AWS_LAMBDA_LOG_GROUP_NAME'              = '/aws/lambda/memory-test'
-                'AWS_LAMBDA_LOG_STREAM_NAME'             = '2023/01/01/[$LATEST]memory123'
-                'AWS_LAMBDA_RUNTIME_COGNITO_IDENTITY'    = 'memory-cognito'
-                'AWS_LAMBDA_RUNTIME_CLIENT_CONTEXT'      = 'memory-client'
-                'AWS_LAMBDA_RUNTIME_DEADLINE_MS'         = ([DateTimeOffset]::UtcNow.AddMinutes(2).ToUnixTimeMilliseconds()).ToString()
+                'AWS_LAMBDA_FUNCTION_NAME'                = 'memory-test'
+                'AWS_LAMBDA_FUNCTION_VERSION'             = '2.0'
+                'AWS_LAMBDA_RUNTIME_INVOKED_FUNCTION_ARN' = 'arn:aws:lambda:us-west-2:123456789012:function:memory-test'
+                'AWS_LAMBDA_FUNCTION_MEMORY_SIZE'         = '1024'
+                'AWS_LAMBDA_RUNTIME_AWS_REQUEST_ID'       = 'memory-test-request'
+                'AWS_LAMBDA_LOG_GROUP_NAME'               = '/aws/lambda/memory-test'
+                'AWS_LAMBDA_LOG_STREAM_NAME'              = '2023/01/01/[$LATEST]memory123'
+                'AWS_LAMBDA_RUNTIME_COGNITO_IDENTITY'     = 'memory-cognito'
+                'AWS_LAMBDA_RUNTIME_CLIENT_CONTEXT'       = 'memory-client'
+                'AWS_LAMBDA_RUNTIME_DEADLINE_MS'          = ([DateTimeOffset]::UtcNow.AddMinutes(2).ToUnixTimeMilliseconds()).ToString()
             }
 
             # Act
@@ -188,16 +189,16 @@ Describe "Set-LambdaContext" {
         It "Should handle invalid memory size gracefully" {
             # Arrange - Set invalid memory size
             Set-TestEnvironmentVariables -Variables @{
-                'AWS_LAMBDA_FUNCTION_NAME'               = 'invalid-memory-test'
-                'AWS_LAMBDA_FUNCTION_VERSION'            = '1.0'
-                'AWS_LAMBDA_RUNTIME_INVOKE_FUNCTION_ARN' = 'arn:aws:lambda:us-east-1:123456789012:function:invalid-memory-test'
-                'AWS_LAMBDA_FUNCTION_MEMORY_SIZE'        = 'invalid'
-                'AWS_LAMBDA_RUNTIME_AWS_REQUEST_ID'      = 'invalid-memory-request'
-                'AWS_LAMBDA_LOG_GROUP_NAME'              = '/aws/lambda/invalid-memory-test'
-                'AWS_LAMBDA_LOG_STREAM_NAME'             = '2023/01/01/[$LATEST]invalid123'
-                'AWS_LAMBDA_RUNTIME_COGNITO_IDENTITY'    = 'invalid-cognito'
-                'AWS_LAMBDA_RUNTIME_CLIENT_CONTEXT'      = 'invalid-client'
-                'AWS_LAMBDA_RUNTIME_DEADLINE_MS'         = ([DateTimeOffset]::UtcNow.AddMinutes(1).ToUnixTimeMilliseconds()).ToString()
+                'AWS_LAMBDA_FUNCTION_NAME'                = 'invalid-memory-test'
+                'AWS_LAMBDA_FUNCTION_VERSION'             = '1.0'
+                'AWS_LAMBDA_RUNTIME_INVOKED_FUNCTION_ARN' = 'arn:aws:lambda:us-east-1:123456789012:function:invalid-memory-test'
+                'AWS_LAMBDA_FUNCTION_MEMORY_SIZE'         = 'invalid'
+                'AWS_LAMBDA_RUNTIME_AWS_REQUEST_ID'       = 'invalid-memory-request'
+                'AWS_LAMBDA_LOG_GROUP_NAME'               = '/aws/lambda/invalid-memory-test'
+                'AWS_LAMBDA_LOG_STREAM_NAME'              = '2023/01/01/[$LATEST]invalid123'
+                'AWS_LAMBDA_RUNTIME_COGNITO_IDENTITY'     = 'invalid-cognito'
+                'AWS_LAMBDA_RUNTIME_CLIENT_CONTEXT'       = 'invalid-client'
+                'AWS_LAMBDA_RUNTIME_DEADLINE_MS'          = ([DateTimeOffset]::UtcNow.AddMinutes(1).ToUnixTimeMilliseconds()).ToString()
             }
 
             # Act & Assert - Should throw when trying to convert invalid memory size
@@ -207,16 +208,16 @@ Describe "Set-LambdaContext" {
         It "Should handle invalid deadline gracefully" {
             # Arrange - Set invalid deadline
             Set-TestEnvironmentVariables -Variables @{
-                'AWS_LAMBDA_FUNCTION_NAME'               = 'invalid-deadline-test'
-                'AWS_LAMBDA_FUNCTION_VERSION'            = '1.0'
-                'AWS_LAMBDA_RUNTIME_INVOKE_FUNCTION_ARN' = 'arn:aws:lambda:us-east-1:123456789012:function:invalid-deadline-test'
-                'AWS_LAMBDA_FUNCTION_MEMORY_SIZE'        = '512'
-                'AWS_LAMBDA_RUNTIME_AWS_REQUEST_ID'      = 'invalid-deadline-request'
-                'AWS_LAMBDA_LOG_GROUP_NAME'              = '/aws/lambda/invalid-deadline-test'
-                'AWS_LAMBDA_LOG_STREAM_NAME'             = '2023/01/01/[$LATEST]invalid456'
-                'AWS_LAMBDA_RUNTIME_COGNITO_IDENTITY'    = 'invalid-deadline-cognito'
-                'AWS_LAMBDA_RUNTIME_CLIENT_CONTEXT'      = 'invalid-deadline-client'
-                'AWS_LAMBDA_RUNTIME_DEADLINE_MS'         = 'not-a-number'
+                'AWS_LAMBDA_FUNCTION_NAME'                = 'invalid-deadline-test'
+                'AWS_LAMBDA_FUNCTION_VERSION'             = '1.0'
+                'AWS_LAMBDA_RUNTIME_INVOKED_FUNCTION_ARN' = 'arn:aws:lambda:us-east-1:123456789012:function:invalid-deadline-test'
+                'AWS_LAMBDA_FUNCTION_MEMORY_SIZE'         = '512'
+                'AWS_LAMBDA_RUNTIME_AWS_REQUEST_ID'       = 'invalid-deadline-request'
+                'AWS_LAMBDA_LOG_GROUP_NAME'               = '/aws/lambda/invalid-deadline-test'
+                'AWS_LAMBDA_LOG_STREAM_NAME'              = '2023/01/01/[$LATEST]invalid456'
+                'AWS_LAMBDA_RUNTIME_COGNITO_IDENTITY'     = 'invalid-deadline-cognito'
+                'AWS_LAMBDA_RUNTIME_CLIENT_CONTEXT'       = 'invalid-deadline-client'
+                'AWS_LAMBDA_RUNTIME_DEADLINE_MS'          = 'not-a-number'
             }
 
             # Act & Assert - Should throw when trying to convert invalid deadline
@@ -230,15 +231,15 @@ Describe "Set-LambdaContext" {
         BeforeEach {
             # Set up environment variables
             Set-TestEnvironmentVariables -Variables @{
-                'AWS_LAMBDA_FUNCTION_NAME'               = 'time-test-function'
-                'AWS_LAMBDA_FUNCTION_VERSION'            = '1.0'
-                'AWS_LAMBDA_RUNTIME_INVOKE_FUNCTION_ARN' = 'arn:aws:lambda:us-east-1:123456789012:function:time-test-function'
-                'AWS_LAMBDA_FUNCTION_MEMORY_SIZE'        = '512'
-                'AWS_LAMBDA_RUNTIME_AWS_REQUEST_ID'      = 'time-test-request'
-                'AWS_LAMBDA_LOG_GROUP_NAME'              = '/aws/lambda/time-test-function'
-                'AWS_LAMBDA_LOG_STREAM_NAME'             = '2023/01/01/[$LATEST]timetest'
-                'AWS_LAMBDA_RUNTIME_COGNITO_IDENTITY'    = 'time-test-cognito'
-                'AWS_LAMBDA_RUNTIME_CLIENT_CONTEXT'      = 'time-test-client'
+                'AWS_LAMBDA_FUNCTION_NAME'                = 'time-test-function'
+                'AWS_LAMBDA_FUNCTION_VERSION'             = '1.0'
+                'AWS_LAMBDA_RUNTIME_INVOKED_FUNCTION_ARN' = 'arn:aws:lambda:us-east-1:123456789012:function:time-test-function'
+                'AWS_LAMBDA_FUNCTION_MEMORY_SIZE'         = '512'
+                'AWS_LAMBDA_RUNTIME_AWS_REQUEST_ID'       = 'time-test-request'
+                'AWS_LAMBDA_LOG_GROUP_NAME'               = '/aws/lambda/time-test-function'
+                'AWS_LAMBDA_LOG_STREAM_NAME'              = '2023/01/01/[$LATEST]timetest'
+                'AWS_LAMBDA_RUNTIME_COGNITO_IDENTITY'     = 'time-test-cognito'
+                'AWS_LAMBDA_RUNTIME_CLIENT_CONTEXT'       = 'time-test-client'
             }
         }
 
@@ -304,17 +305,17 @@ Describe "Set-LambdaContext" {
         BeforeEach {
             # Set up environment variables with verbose logging enabled
             Set-TestEnvironmentVariables -Variables @{
-                'AWS_LAMBDA_FUNCTION_NAME'               = 'verbose-test'
-                'AWS_LAMBDA_FUNCTION_VERSION'            = '1.0'
-                'AWS_LAMBDA_RUNTIME_INVOKE_FUNCTION_ARN' = 'arn:aws:lambda:us-east-1:123456789012:function:verbose-test'
-                'AWS_LAMBDA_FUNCTION_MEMORY_SIZE'        = '512'
-                'AWS_LAMBDA_RUNTIME_AWS_REQUEST_ID'      = 'verbose-request'
-                'AWS_LAMBDA_LOG_GROUP_NAME'              = '/aws/lambda/verbose-test'
-                'AWS_LAMBDA_LOG_STREAM_NAME'             = '2023/01/01/[$LATEST]verbose'
-                'AWS_LAMBDA_RUNTIME_COGNITO_IDENTITY'    = 'verbose-cognito'
-                'AWS_LAMBDA_RUNTIME_CLIENT_CONTEXT'      = 'verbose-client'
-                'AWS_LAMBDA_RUNTIME_DEADLINE_MS'         = ([DateTimeOffset]::UtcNow.AddMinutes(1).ToUnixTimeMilliseconds()).ToString()
-                'POWERSHELL_RUNTIME_VERBOSE'             = 'TRUE'
+                'AWS_LAMBDA_FUNCTION_NAME'                = 'verbose-test'
+                'AWS_LAMBDA_FUNCTION_VERSION'             = '1.0'
+                'AWS_LAMBDA_RUNTIME_INVOKED_FUNCTION_ARN' = 'arn:aws:lambda:us-east-1:123456789012:function:verbose-test'
+                'AWS_LAMBDA_FUNCTION_MEMORY_SIZE'         = '512'
+                'AWS_LAMBDA_RUNTIME_AWS_REQUEST_ID'       = 'verbose-request'
+                'AWS_LAMBDA_LOG_GROUP_NAME'               = '/aws/lambda/verbose-test'
+                'AWS_LAMBDA_LOG_STREAM_NAME'              = '2023/01/01/[$LATEST]verbose'
+                'AWS_LAMBDA_RUNTIME_COGNITO_IDENTITY'     = 'verbose-cognito'
+                'AWS_LAMBDA_RUNTIME_CLIENT_CONTEXT'       = 'verbose-client'
+                'AWS_LAMBDA_RUNTIME_DEADLINE_MS'          = ([DateTimeOffset]::UtcNow.AddMinutes(1).ToUnixTimeMilliseconds()).ToString()
+                'POWERSHELL_RUNTIME_VERBOSE'              = 'TRUE'
             }
         }
 

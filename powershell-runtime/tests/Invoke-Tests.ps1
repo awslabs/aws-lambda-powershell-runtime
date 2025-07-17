@@ -11,7 +11,12 @@
     - BuiltModule: Tests the built/merged module (validation)
 
 .PARAMETER TestType
-    Specifies which type of tests to run. Valid values: 'All', 'Unit', 'Build'
+    Specifies which type of tests to run. Valid values: 'LocalUnit', 'Unit', 'Build', 'Private', 'Integration'
+    - LocalUnit: Runs all local unit tests (Build, Module, and Private) - Default
+    - Unit: Runs Module and Private unit tests
+    - Build: Runs only Build tests
+    - Private: Runs only Private unit tests
+    - Integration: Runs only integration tests
 
 .PARAMETER Path
     Specifies specific test files or directories to run
@@ -31,17 +36,45 @@
 .PARAMETER DetailedOutput
     Enables detailed Pester output for debugging
 
+.PARAMETER StackName
+    Name of the CloudFormation stack for integration tests (default: "powershell-runtime-integration-test-infrastructure")
+    Only used when TestType is 'Integration'
+
+.PARAMETER Region
+    AWS region for infrastructure deployment (default: "us-east-1")
+    Only used when TestType is 'Integration'
+
+.PARAMETER ProfileName
+    AWS profile name for authentication
+    Only used when TestType is 'Integration'
+
 .EXAMPLE
     ./Invoke-Tests.ps1
-    Runs all tests in Source mode (fastest for development)
+    Runs all local unit tests (Build, Module, Private) in Source mode (fastest for development)
 
 .EXAMPLE
     ./Invoke-Tests.ps1 -TestBuiltModule -Coverage
-    Runs all tests against built module with coverage analysis
+    Runs all local unit tests against built module with coverage analysis
+
+.EXAMPLE
+    ./Invoke-Tests.ps1 -TestType Private
+    Runs only Private unit tests
+
+.EXAMPLE
+    ./Invoke-Tests.ps1 -TestType Build
+    Runs only Build tests
 
 .EXAMPLE
     ./Invoke-Tests.ps1 -Path './tests/unit/Private/Get-Handler.Tests.ps1'
     Runs a specific test file
+
+.EXAMPLE
+    ./Invoke-Tests.ps1 -TestType Integration
+    Runs integration tests with default stack name and region, automatically sets up and cleans up environment
+
+.EXAMPLE
+    ./Invoke-Tests.ps1 -TestType Integration -StackName "my-test-stack" -Region "us-west-2" -ProfileName "dev"
+    Runs integration tests with custom stack, region, and AWS profile
 
 .EXAMPLE
     ./Invoke-Tests.ps1 -CI -OutputFormat NUnitXml
@@ -50,8 +83,8 @@
 
 [CmdletBinding()]
 param(
-    [ValidateSet('All', 'Unit', 'Build')]
-    [string]$TestType = 'All',
+    [ValidateSet('LocalUnit', 'Unit', 'Build', 'Private', 'Integration')]
+    [string]$TestType = 'LocalUnit',
 
     [string[]]$Path,
     [switch]$TestBuiltModule,
@@ -61,7 +94,12 @@ param(
     [ValidateSet('NUnitXml', 'JUnitXml', 'Console')]
     [string]$OutputFormat = 'Console',
 
-    [switch]$DetailedOutput
+    [switch]$DetailedOutput,
+
+    # Integration test parameters
+    [string]$StackName = "powershell-runtime-integration-test-infrastructure",
+    [string]$Region = "us-east-1",
+    [string]$ProfileName
 )
 
 # Set error action preference for consistent behavior
@@ -140,7 +178,7 @@ function Initialize-TestFramework {
 function Get-CoveragePaths {
     param($TestPaths, $ProjectRoot, $TestBuiltModule, $TestType)
 
-    # For Build tests, always include the build script
+    # Build tests - only cover build script
     if ($TestType -eq 'Build') {
         $buildScript = Join-Path $ProjectRoot "build-PwshRuntimeLayer.ps1"
         if (Test-Path $buildScript) {
@@ -152,20 +190,42 @@ function Get-CoveragePaths {
         }
     }
 
+    # Private tests - only cover private source functions
+    if ($TestType -eq 'Private') {
+        $privatePath = Join-Path $ProjectRoot "source/modules/Private"
+        if (Test-Path $privatePath) {
+            return Get-ChildItem -Path $privatePath -Filter "*.ps1" -Recurse | ForEach-Object { $_.FullName }
+        }
+        else {
+            Write-Warning "Private source path not found at: $privatePath"
+            return @()
+        }
+    }
+
+    # For Unit/LocalUnit tests:
+    # - If TestBuiltModule: only cover built module
+    # - If source testing: cover all source files
     if ($TestBuiltModule) {
         $builtModule = Join-Path $ProjectRoot "layers/runtimeLayer/modules/pwsh-runtime.psm1"
         if (Test-Path $builtModule) {
             return @($builtModule)
         }
+        else {
+            Write-Warning "Built module not found at: $builtModule"
+            return @()
+        }
     }
-
-    # For source testing, include all source files
-    $sourcePath = Join-Path $ProjectRoot "source/modules"
-    if (Test-Path $sourcePath) {
-        return Get-ChildItem -Path $sourcePath -Filter "*.ps1" -Recurse | ForEach-Object { $_.FullName }
+    else {
+        # Source testing - cover all source files
+        $sourcePath = Join-Path $ProjectRoot "source/modules"
+        if (Test-Path $sourcePath) {
+            return Get-ChildItem -Path $sourcePath -Filter "*.ps1" -Recurse | ForEach-Object { $_.FullName }
+        }
+        else {
+            Write-Warning "Source path not found at: $sourcePath"
+            return @()
+        }
     }
-
-    return @()
 }
 
 function Write-CIDiagnostics {
@@ -197,6 +257,98 @@ function Invoke-CICleanup {
     $env:PSModulePath = $script:CurrentPSModulePath
 
     Write-Host "CI Cleanup: Completed" -ForegroundColor Green
+}
+
+function Initialize-IntegrationTestEnvironment {
+    [CmdletBinding()]
+    param(
+        [string]$StackName,
+        [string]$Region,
+        [string]$ProfileName
+    )
+
+    Write-Host "Setting up integration test environment..." -ForegroundColor Yellow
+
+    # Import required AWS modules
+    Write-Host "Importing required AWS modules..." -ForegroundColor Yellow
+    if (-not (Get-Module -Name AWS.Tools.CloudFormation -ListAvailable)) {
+        throw "AWS.Tools.CloudFormation module is not installed. Please install it with: Install-Module -Name AWS.Tools.CloudFormation -Force"
+    }
+    Import-Module AWS.Tools.CloudFormation -ErrorAction Stop
+    Write-Host "AWS modules imported successfully" -ForegroundColor Green
+
+    # Set up authentication parameters
+    $awsParams = @{
+        Region = $Region
+    }
+
+    # Add profile if specified
+    if ($ProfileName) {
+        $awsParams.ProfileName = $ProfileName
+    }
+
+    Write-Host "Retrieving stack outputs for $StackName..." -ForegroundColor Yellow
+
+    try {
+        $stack = Get-CFNStack -StackName $StackName @awsParams
+    }
+    catch {
+        Write-Error "Failed to retrieve stack information: $_"
+        throw "Could not find stack '$StackName'. Make sure the stack exists and you have permission to access it."
+    }
+
+    # Convert outputs to environment variables
+    $outputCount = 0
+    foreach ($output in ($stack.Outputs | Sort-Object -Property OutputKey)) {
+        $envVarName = "PWSH_TEST_$($output.OutputKey.ToUpper())"
+        Write-Host "Setting $envVarName = $($output.OutputValue)" -ForegroundColor Cyan
+        [Environment]::SetEnvironmentVariable($envVarName, $output.OutputValue, "Process")
+        $outputCount++
+    }
+
+    # Set a flag indicating infrastructure is available
+    [Environment]::SetEnvironmentVariable("PWSH_TEST_INFRASTRUCTURE_DEPLOYED", "TRUE", "Process")
+
+    # Set configuration environment variables for use by other scripts/tests
+    Write-Host "Setting configuration environment variables..." -ForegroundColor Yellow
+    [Environment]::SetEnvironmentVariable("PWSH_TEST_STACK_NAME", $StackName, "Process")
+    Write-Host "Setting PWSH_TEST_STACK_NAME = $StackName" -ForegroundColor Cyan
+
+    [Environment]::SetEnvironmentVariable("PWSH_TEST_AWS_REGION", $Region, "Process")
+    Write-Host "Setting PWSH_TEST_AWS_REGION = $Region" -ForegroundColor Cyan
+
+    if ($ProfileName) {
+        [Environment]::SetEnvironmentVariable("PWSH_TEST_PROFILE_NAME", $ProfileName, "Process")
+        Write-Host "Setting PWSH_TEST_PROFILE_NAME = $ProfileName" -ForegroundColor Cyan
+    }
+
+    Write-Host "Successfully set $outputCount stack output environment variables for integration tests" -ForegroundColor Green
+    Write-Host "Environment variable PWSH_TEST_INFRASTRUCTURE_DEPLOYED has been set to TRUE" -ForegroundColor Green
+    Write-Host "Configuration environment variables (PWSH_TEST_STACK_NAME, PWSH_TEST_AWS_REGION$(if ($ProfileName) { ', PWSH_TEST_PROFILE_NAME' })) have been set" -ForegroundColor Green
+}
+
+function Clear-IntegrationTestEnvironment {
+    [CmdletBinding()]
+    param()
+
+    Write-Host "Cleaning up integration test environment variables..." -ForegroundColor Yellow
+
+    # Get all environment variables that start with PWSH_TEST_
+    $testEnvVars = [Environment]::GetEnvironmentVariables("Process").Keys | Where-Object { $_ -like "PWSH_TEST_*" }
+
+    $cleanedCount = 0
+    foreach ($envVar in $testEnvVars) {
+        Write-Host "Removing $envVar" -ForegroundColor Cyan
+        [Environment]::SetEnvironmentVariable($envVar, $null, "Process")
+        $cleanedCount++
+    }
+
+    if ($cleanedCount -gt 0) {
+        Write-Host "Successfully cleaned up $cleanedCount integration test environment variables" -ForegroundColor Green
+    }
+    else {
+        Write-Host "No integration test environment variables found to clean up" -ForegroundColor Yellow
+    }
 }
 
 
@@ -358,15 +510,39 @@ try {
 
     Initialize-TestFramework
 
+    # Set up integration test environment if needed
+    if ($TestType -eq 'Integration') {
+        try {
+            Initialize-IntegrationTestEnvironment -StackName $StackName -Region $Region -ProfileName $ProfileName
+        }
+        catch {
+            Write-Error "Failed to initialize integration test environment: $_"
+            throw "Integration test environment setup failed. Please ensure the CloudFormation stack '$StackName' exists in region '$Region' and you have appropriate permissions."
+        }
+    }
+
     # Configure paths
     $TestPaths = if ($Path) {
         $Path | Where-Object { Test-Path $_ }
     }
     else {
         switch ($TestType) {
-            'Unit' { Join-Path $script:ProjectRoot 'tests/unit' }
+            'Unit' {
+                @(
+                    (Join-Path $script:ProjectRoot 'tests/unit/Module'),
+                    (Join-Path $script:ProjectRoot 'tests/unit/Private')
+                )
+            }
             'Build' { Join-Path $script:ProjectRoot 'tests/unit/Build' }
-            default { Join-Path $script:ProjectRoot 'tests/unit' }
+            'Private' { Join-Path $script:ProjectRoot 'tests/unit/Private' }
+            'Integration' { Join-Path $script:ProjectRoot 'tests/integration' }
+            'LocalUnit' {
+                @(
+                    (Join-Path $script:ProjectRoot 'tests/unit/Build'),
+                    (Join-Path $script:ProjectRoot 'tests/unit/Module'),
+                    (Join-Path $script:ProjectRoot 'tests/unit/Private')
+                )
+            }
         }
     }
 
@@ -391,12 +567,17 @@ try {
         $Config.CodeCoverage.Enabled = $true
         $Config.CodeCoverage.OutputFormat = 'JaCoCo'
         $Config.CodeCoverage.OutputPath = Join-Path $script:ProjectRoot "CodeCoverage.xml"
-        $Config.CodeCoverage.Path = Get-CoveragePaths -TestPaths $TestPaths -ProjectRoot $script:ProjectRoot -TestBuiltModule $TestBuiltModule -TestType $TestType
+        $coveragePaths = Get-CoveragePaths -TestPaths $TestPaths -ProjectRoot $script:ProjectRoot -TestBuiltModule $TestBuiltModule -TestType $TestType
+        $Config.CodeCoverage.Path = $coveragePaths
 
         $coverageThreshold = $script:TestConfig.PrivateData.TestSettings.CodeCoverage.Threshold
         $Config.CodeCoverage.CoveragePercentTarget = $coverageThreshold
 
-        Write-Host "Coverage enabled: $($Config.CodeCoverage.Path.Count) files" -ForegroundColor Yellow
+        Write-Host "Coverage enabled for $($coveragePaths.Count) files:" -ForegroundColor Yellow
+        foreach ($path in $coveragePaths) {
+            $relativePath = $path -replace [regex]::Escape($script:ProjectRoot), '.'
+            Write-Host "  - $relativePath" -ForegroundColor Cyan
+        }
     }
 
     # Configure output
@@ -461,4 +642,15 @@ catch {
         Invoke-CICleanup
     }
     Exit-TestScript -ExitCode 1 -ExitMessage "Test execution failed: $_"
+}
+finally {
+    # Always clean up integration test environment variables
+    if ($TestType -eq 'Integration') {
+        try {
+            Clear-IntegrationTestEnvironment
+        }
+        catch {
+            Write-Warning "Failed to clean up integration test environment: $_"
+        }
+    }
 }
