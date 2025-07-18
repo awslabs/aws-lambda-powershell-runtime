@@ -31,6 +31,14 @@ RUN rm -Rf $ARTIFACTS_DIR/modules/Private
 # Make bootstrap script executable
 RUN chmod +x /var/runtime/bootstrap
 
+# https://github.com/jborean93/PSWSMan
+# This fixes WSMan/OMI so that PowerShell remoting is possible to Windows hosts.
+RUN DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1 /opt/powershell/pwsh -C '\
+    Install-PSResource -Name PSWSMAN -Version "[2.3.1,3.0.0]" -Scope AllUsers -TrustRepository ; \
+    Install-WSMan -Verbose ; \
+    Get-WSManVersion | Format-List \
+    '
+
 ## Build final image
 FROM public.ecr.aws/lambda/provided:al2023
 ## Copy PowerShell runtime files
