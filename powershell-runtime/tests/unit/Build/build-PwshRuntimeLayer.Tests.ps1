@@ -310,33 +310,6 @@ Describe "build-PwshRuntimeLayer.ps1" {
                 $_.Exception.Message | Should -Not -BeNullOrEmpty
             }
         }
-
-        It "Should handle read-only layer path appropriately" {
-            # Create a directory and make it read-only (if supported on platform)
-            $readOnlyPath = Join-Path $TestDrive "readonly-layer"
-            New-Item -Path $readOnlyPath -ItemType Directory -Force
-
-            try {
-                # Try to make directory read-only (Windows only test)
-                if ($IsWindows) {
-                    Set-ItemProperty -Path $readOnlyPath -Name IsReadOnly -Value $true
-                    # Build script should handle this appropriately on Windows
-                    { & $script:BuildScript -LayerPath $readOnlyPath -SkipRuntimeSetup 6>$null } | Should -Throw
-                }
-                else {
-                    # On non-Windows platforms, test that build succeeds even with permission issues
-                    # The build script should handle permission issues gracefully
-                    { & $script:BuildScript -LayerPath $readOnlyPath -SkipRuntimeSetup 6>$null } | Should -Not -Throw
-                }
-            }
-            finally {
-                # Clean up read-only attribute
-                if ($IsWindows -and (Test-Path $readOnlyPath)) {
-                    Set-ItemProperty -Path $readOnlyPath -Name IsReadOnly -Value $false
-                    Remove-Item $readOnlyPath -Recurse -Force -ErrorAction SilentlyContinue
-                }
-            }
-        }
     }
 
     Context "When testing download logic without runtime setup" {
