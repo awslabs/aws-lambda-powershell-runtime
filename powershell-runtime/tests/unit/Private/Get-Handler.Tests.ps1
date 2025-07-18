@@ -53,7 +53,7 @@ Describe "Get-Handler" {
             $result | Should -Not -BeNullOrEmpty
             $result.handlerType | Should -Be 'Script'
             $result.scriptFileName | Should -Be "handler.ps1"
-            $result.scriptFilePath | Should -Be "/var/task/handler.ps1"
+            Assert-PathEquals -Actual $result.scriptFilePath -Expected "/var/task/handler.ps1"
             $result.PSObject.Properties['functionName'] | Should -BeNullOrEmpty
             $result.PSObject.Properties['moduleName'] | Should -BeNullOrEmpty
         }
@@ -68,7 +68,7 @@ Describe "Get-Handler" {
             # Assert
             $result.handlerType | Should -Be 'Script'
             $result.scriptFileName | Should -Be "my-complex-handler.ps1"
-            $result.scriptFilePath | Should -Be "/var/task/my-complex-handler.ps1"
+            Assert-PathEquals -Actual $result.scriptFilePath -Expected "/var/task/my-complex-handler.ps1"
         }
 
         It "Should use LAMBDA_TASK_ROOT environment variable for script path" {
@@ -80,7 +80,7 @@ Describe "Get-Handler" {
             $result = pwsh-runtime\Get-Handler
 
             # Assert
-            $result.scriptFilePath | Should -Be "/custom/task/root/test.ps1"
+            Assert-PathEquals -Actual $result.scriptFilePath -Expected "/custom/task/root/test.ps1"
         }
 
         It "Should handle script handler with subdirectory path" {
@@ -93,7 +93,7 @@ Describe "Get-Handler" {
             # Assert
             $result.handlerType | Should -Be 'Script'
             $result.scriptFileName | Should -Be "subfolder/handler.ps1"
-            $result.scriptFilePath | Should -Be "/var/task/subfolder/handler.ps1"
+            Assert-PathEquals -Actual $result.scriptFilePath -Expected "/var/task/subfolder/handler.ps1"
         }
     }
 
@@ -109,7 +109,7 @@ Describe "Get-Handler" {
             $result | Should -Not -BeNullOrEmpty
             $result.handlerType | Should -Be 'Function'
             $result.scriptFileName | Should -Be "handler.ps1"
-            $result.scriptFilePath | Should -Be "/var/task/handler.ps1"
+            Assert-PathEquals -Actual $result.scriptFilePath -Expected "/var/task/handler.ps1"
             $result.functionName | Should -Be "MyFunction"
             $result.PSObject.Properties['moduleName'] | Should -BeNullOrEmpty
         }
@@ -125,7 +125,7 @@ Describe "Get-Handler" {
             $result.handlerType | Should -Be 'Function'
             $result.scriptFileName | Should -Be "my-script-file.ps1"
             $result.functionName | Should -Be "My-Complex-Function-Name"
-            $result.scriptFilePath | Should -Be "/var/task/my-script-file.ps1"
+            Assert-PathEquals -Actual $result.scriptFilePath -Expected "/var/task/my-script-file.ps1"
         }
 
         It "Should use LAMBDA_TASK_ROOT for function handler script path" {
@@ -137,7 +137,7 @@ Describe "Get-Handler" {
             $result = pwsh-runtime\Get-Handler
 
             # Assert
-            $result.scriptFilePath | Should -Be "/custom/path/handler.ps1"
+            Assert-PathEquals -Actual $result.scriptFilePath -Expected "/custom/path/handler.ps1"
         }
 
         It "Should handle function handler with script in subdirectory" {
@@ -151,7 +151,7 @@ Describe "Get-Handler" {
             $result.handlerType | Should -Be 'Function'
             $result.scriptFileName | Should -Be "lib/utilities.ps1"
             $result.functionName | Should -Be "Get-Data"
-            $result.scriptFilePath | Should -Be "/var/task/lib/utilities.ps1"
+            Assert-PathEquals -Actual $result.scriptFilePath -Expected "/var/task/lib/utilities.ps1"
         }
     }
 
@@ -229,7 +229,7 @@ Describe "Get-Handler" {
 
             # Assert
             $result.scriptFileName | Should -Be "custom-handler.ps1"
-            $result.scriptFilePath | Should -Be "/var/task/custom-handler.ps1"
+            Assert-PathEquals -Actual $result.scriptFilePath -Expected "/var/task/custom-handler.ps1"
         }
 
         It "Should handle custom function handler parameter" {

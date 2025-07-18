@@ -61,9 +61,9 @@ Describe "Set-PSModulePath" {
             $paths.Count | Should -BeGreaterOrEqual 3
 
             # Verify the three required paths are present in correct order
-            $paths[0] | Should -Be '/opt/powershell/modules'
-            $paths[1] | Should -Be '/opt/modules'
-            $paths[2] | Should -Be '/var/task/modules'
+            Assert-PathEquals -Actual $paths[0] -Expected '/opt/powershell/modules'
+            Assert-PathEquals -Actual $paths[1] -Expected '/opt/modules'
+            Assert-PathEquals -Actual $paths[2] -Expected '/var/task/modules'
         }
 
         It "Should include <PathDescription> at position <Position>" -ForEach @(
@@ -76,7 +76,7 @@ Describe "Set-PSModulePath" {
 
             # Assert
             $paths = $env:PSModulePath -split ':'
-            $paths[$Position] | Should -Be $ExpectedPath
+            Assert-PathEquals -Actual $paths[$Position] -Expected $ExpectedPath
         }
 
         It "Should use colon as path separator" {
@@ -99,7 +99,7 @@ Describe "Set-PSModulePath" {
 
             # Assert
             $paths = $env:PSModulePath -split ':'
-            $paths[2] | Should -Be '/custom/task/root/modules'
+            Assert-PathEquals -Actual $paths[2] -Expected '/custom/task/root/modules'
         }
 
         It "Should handle LAMBDA_TASK_ROOT with trailing slash" {
@@ -111,7 +111,7 @@ Describe "Set-PSModulePath" {
 
             # Assert
             $paths = $env:PSModulePath -split ':'
-            $paths[2] | Should -Be '/custom/task/root/modules'
+            Assert-PathEquals -Actual $paths[2] -Expected '/custom/task/root/modules'
         }
 
 
@@ -164,9 +164,9 @@ Describe "Set-PSModulePath" {
 
             # Assert
             $paths = $env:PSModulePath -split ':'
-            $paths[0] | Should -Be '/opt/powershell/modules'
-            $paths[1] | Should -Be '/opt/modules'
-            $paths[2] | Should -Be '/var/task/modules'
+            Assert-PathEquals -Actual $paths[0] -Expected '/opt/powershell/modules'
+            Assert-PathEquals -Actual $paths[1] -Expected '/opt/modules'
+            Assert-PathEquals -Actual $paths[2] -Expected '/var/task/modules'
         }
     }
 
@@ -188,9 +188,9 @@ Describe "Set-PSModulePath" {
 
             # Assert
             $paths = $env:PSModulePath -split ':'
-            $paths[0] | Should -Be '/opt/powershell/modules'
-            $paths[1] | Should -Be '/opt/modules'
-            $paths[2] | Should -Be '/var/task/modules'
+            Assert-PathEquals -Actual $paths[0] -Expected '/opt/powershell/modules'
+            Assert-PathEquals -Actual $paths[1] -Expected '/opt/modules'
+            Assert-PathEquals -Actual $paths[2] -Expected '/var/task/modules'
         }
     }
 
@@ -205,8 +205,11 @@ Describe "Set-PSModulePath" {
 
             # Assert
             $paths = $env:PSModulePath -split ':'
-            $firstIndex = [Array]::IndexOf($paths, $FirstPathValue)
-            $secondIndex = [Array]::IndexOf($paths, $SecondPathValue)
+
+            # Normalize paths for cross-platform compatibility
+            $normalizedPaths = $paths | ForEach-Object { $_ -replace '\\', '/' }
+            $firstIndex = [Array]::IndexOf($normalizedPaths, $FirstPathValue)
+            $secondIndex = [Array]::IndexOf($normalizedPaths, $SecondPathValue)
 
             $firstIndex | Should -BeLessThan $secondIndex
         }
@@ -252,9 +255,9 @@ Describe "Set-PSModulePath" {
             $env:PSModulePath | Should -Not -Match '/existing/path2'
 
             $paths = $env:PSModulePath -split ':'
-            $paths[0] | Should -Be '/opt/powershell/modules'
-            $paths[1] | Should -Be '/opt/modules'
-            $paths[2] | Should -Be '/var/task/modules'
+            Assert-PathEquals -Actual $paths[0] -Expected '/opt/powershell/modules'
+            Assert-PathEquals -Actual $paths[1] -Expected '/opt/modules'
+            Assert-PathEquals -Actual $paths[2] -Expected '/var/task/modules'
         }
 
         It "Should set PSModulePath even when it was previously empty" {
@@ -321,7 +324,7 @@ Describe "Set-PSModulePath" {
 
             # Assert
             $paths = $env:PSModulePath -split ':'
-            $paths[2] | Should -Be '/path with spaces/and-dashes_and.dots/modules'
+            Assert-PathEquals -Actual $paths[2] -Expected '/path with spaces/and-dashes_and.dots/modules'
         }
 
         It "Should handle very long LAMBDA_TASK_ROOT path" {
@@ -334,7 +337,7 @@ Describe "Set-PSModulePath" {
 
             # Assert
             $paths = $env:PSModulePath -split ':'
-            $paths[2] | Should -Be "$longPath/modules"
+            Assert-PathEquals -Actual $paths[2] -Expected "$longPath/modules"
         }
     }
 

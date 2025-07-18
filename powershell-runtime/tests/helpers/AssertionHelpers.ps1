@@ -460,5 +460,61 @@ function Assert-FileExists {
     Write-Verbose "File existence assertion passed: '$Path'"
 }
 
+<#
+.SYNOPSIS
+    Verify path equality with cross-platform path separator handling.
+
+.DESCRIPTION
+    Asserts that two paths are equal by normalizing path separators to forward slashes,
+    allowing tests to pass on both Windows and Linux regardless of the path separator
+    used by System.IO.Path.Combine() in the runtime.
+
+.PARAMETER Actual
+    The actual path value from the test result.
+
+.PARAMETER Expected
+    The expected path value (should use forward slashes for consistency).
+
+.PARAMETER Because
+    Optional reason for the assertion failure.
+
+.EXAMPLE
+    Assert-PathEquals -Actual $result.scriptFilePath -Expected "/var/task/handler.ps1"
+    Verifies that the script file path matches, regardless of platform path separators.
+
+.EXAMPLE
+    Assert-PathEquals -Actual $result.scriptFilePath -Expected "/var/task/lib/utilities.ps1" -Because "subdirectory paths should be handled correctly"
+    Verifies path equality with a custom failure message.
+#>
+function Assert-PathEquals {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$Actual,
+
+        [Parameter(Mandatory)]
+        [string]$Expected,
+
+        [string]$Because
+    )
+
+    # Normalize both paths to use forward slashes for comparison
+    $normalizedActual = $Actual -replace '\\', '/'
+    $normalizedExpected = $Expected -replace '\\', '/'
+
+    if ($normalizedActual -ne $normalizedExpected) {
+        $message = "Expected path '$Expected' but got '$Actual'"
+        if ($normalizedActual -ne $Actual) {
+            $message += " (normalized: '$normalizedExpected' vs '$normalizedActual')"
+        }
+        if ($Because) {
+            $message += " because $Because"
+        }
+        throw $message
+    }
+
+    Write-Verbose "Path assertion passed: '$Expected' matches '$Actual'"
+}
+
 # Functions are available when dot-sourced
 # To use: . ./AssertionHelpers.ps1

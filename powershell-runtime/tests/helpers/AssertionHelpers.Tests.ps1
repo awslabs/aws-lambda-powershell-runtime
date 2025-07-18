@@ -447,3 +447,153 @@ Describe "Assert-FileExists" {
         }
     }
 }
+
+Describe "Assert-PathEquals" {
+    Context "When paths are identical" {
+        It "Should pass for identical forward slash paths" {
+            { Assert-PathEquals -Actual "/var/task/handler.ps1" -Expected "/var/task/handler.ps1" } | Should -Not -Throw
+        }
+
+        It "Should pass for identical backslash paths" {
+            { Assert-PathEquals -Actual "C:\var\task\handler.ps1" -Expected "C:\var\task\handler.ps1" } | Should -Not -Throw
+        }
+
+        It "Should pass for identical relative paths" {
+            { Assert-PathEquals -Actual "lib/utilities.ps1" -Expected "lib/utilities.ps1" } | Should -Not -Throw
+        }
+
+        It "Should pass for identical single file names" {
+            { Assert-PathEquals -Actual "handler.ps1" -Expected "handler.ps1" } | Should -Not -Throw
+        }
+    }
+
+    Context "When paths differ only by separators" {
+        It "Should pass when actual uses backslashes and expected uses forward slashes" {
+            { Assert-PathEquals -Actual "C:\var\task\handler.ps1" -Expected "C:/var/task/handler.ps1" } | Should -Not -Throw
+        }
+
+        It "Should pass when actual uses forward slashes and expected uses backslashes" {
+            { Assert-PathEquals -Actual "/var/task/handler.ps1" -Expected "\var\task\handler.ps1" } | Should -Not -Throw
+        }
+
+        It "Should pass for mixed separators in both paths" {
+            { Assert-PathEquals -Actual "C:\var/task\handler.ps1" -Expected "C:/var\task/handler.ps1" } | Should -Not -Throw
+        }
+
+        It "Should pass for nested directory paths with different separators" {
+            { Assert-PathEquals -Actual "lib\modules\aws\tools\handler.ps1" -Expected "lib/modules/aws/tools/handler.ps1" } | Should -Not -Throw
+        }
+    }
+
+    Context "When paths are genuinely different" {
+        It "Should throw for different file names" {
+            { Assert-PathEquals -Actual "/var/task/handler.ps1" -Expected "/var/task/different.ps1" } | Should -Throw -ExpectedMessage "*Expected path '/var/task/different.ps1' but got '/var/task/handler.ps1'*"
+        }
+
+        It "Should throw for different directory paths" {
+            { Assert-PathEquals -Actual "/var/task/handler.ps1" -Expected "/var/runtime/handler.ps1" } | Should -Throw -ExpectedMessage "*Expected path '/var/runtime/handler.ps1' but got '/var/task/handler.ps1'*"
+        }
+
+        It "Should throw for different number of path segments" {
+            { Assert-PathEquals -Actual "/var/task/lib/handler.ps1" -Expected "/var/task/handler.ps1" } | Should -Throw -ExpectedMessage "*Expected path '/var/task/handler.ps1' but got '/var/task/lib/handler.ps1'*"
+        }
+
+        It "Should throw for completely different paths" {
+            { Assert-PathEquals -Actual "C:\Windows\System32\file.txt" -Expected "/usr/local/bin/script.sh" } | Should -Throw -ExpectedMessage "*Expected path '/usr/local/bin/script.sh' but got 'C:\Windows\System32\file.txt'*"
+        }
+    }
+
+    Context "When using custom Because parameter" {
+        It "Should include custom reason in error message" {
+            { Assert-PathEquals -Actual "/var/task/wrong.ps1" -Expected "/var/task/handler.ps1" -Because "the script file path should match the handler configuration" } | Should -Throw -ExpectedMessage "*because the script file path should match the handler configuration*"
+        }
+
+        It "Should include custom reason with normalized paths" {
+            { Assert-PathEquals -Actual "C:\var\task\wrong.ps1" -Expected "/var/task/handler.ps1" -Because "cross-platform paths should be normalized" } | Should -Throw -ExpectedMessage "*because cross-platform paths should be normalized*"
+        }
+    }
+
+    Context "When handling edge cases" {
+        It "Should handle PowerShell parameter validation for empty strings" {
+            # PowerShell parameter validation prevents empty strings for mandatory parameters
+            { Assert-PathEquals -Actual "" -Expected "" } | Should -Throw -ExpectedMessage "*Cannot bind argument to parameter*"
+        }
+
+        It "Should handle PowerShell parameter validation for empty actual path" {
+            { Assert-PathEquals -Actual "" -Expected "/var/task/handler.ps1" } | Should -Throw -ExpectedMessage "*Cannot bind argument to parameter*"
+        }
+
+        It "Should handle paths with trailing separators" {
+            { Assert-PathEquals -Actual "/var/task/" -Expected "/var/task" } | Should -Throw -ExpectedMessage "*Expected path '/var/task' but got '/var/task/'*"
+        }
+
+        It "Should handle paths with multiple consecutive separators" {
+            { Assert-PathEquals -Actual "/var//task/handler.ps1" -Expected "/var/task/handler.ps1" } | Should -Throw -ExpectedMessage "*Expected path '/var/task/handler.ps1' but got '/var//task/handler.ps1'*"
+        }
+
+        It "Should handle paths with dots" {
+            { Assert-PathEquals -Actual "/var/task/./handler.ps1" -Expected "/var/task/handler.ps1" } | Should -Throw -ExpectedMessage "*Expected path '/var/task/handler.ps1' but got '/var/task/./handler.ps1'*"
+        }
+
+        It "Should handle paths with parent directory references" {
+            { Assert-PathEquals -Actual "/var/task/../task/handler.ps1" -Expected "/var/task/handler.ps1" } | Should -Throw -ExpectedMessage "*Expected path '/var/task/handler.ps1' but got '/var/task/../task/handler.ps1'*"
+        }
+    }
+
+    Context "When testing real-world Lambda scenarios" {
+        It "Should pass for typical Lambda task paths with different separators" {
+            { Assert-PathEquals -Actual "/var\task\handler.ps1" -Expected "/var/task/handler.ps1" } | Should -Not -Throw
+        }
+
+        It "Should pass for module paths in subdirectories" {
+            { Assert-PathEquals -Actual "/var\task\lib\utilities.ps1" -Expected "/var/task/lib/utilities.ps1" } | Should -Not -Throw
+        }
+
+        It "Should pass for PowerShell module manifest paths" {
+            { Assert-PathEquals -Actual "/opt\powershell\modules\MyModule\MyModule.psd1" -Expected "/opt/powershell/modules/MyModule/MyModule.psd1" } | Should -Not -Throw
+        }
+
+        It "Should pass for Windows-style Lambda paths normalized to Linux" {
+            { Assert-PathEquals -Actual "C:\lambda\task\function.ps1" -Expected "C:/lambda/task/function.ps1" } | Should -Not -Throw
+        }
+
+        It "Should handle layer paths correctly" {
+            { Assert-PathEquals -Actual "/opt\powershell\modules\AWS.Tools.Common\AWS.Tools.Common.psd1" -Expected "/opt/powershell/modules/AWS.Tools.Common/AWS.Tools.Common.psd1" } | Should -Not -Throw
+        }
+    }
+
+    Context "When error messages show normalization details" {
+        It "Should show normalized paths in error message when normalization occurred" {
+            { Assert-PathEquals -Actual "C:\var\task\wrong.ps1" -Expected "/var/task/handler.ps1" } | Should -Throw -ExpectedMessage "*normalized: '/var/task/handler.ps1' vs 'C:/var/task/wrong.ps1'*"
+        }
+
+        It "Should not show normalization details when no normalization was needed" {
+            { Assert-PathEquals -Actual "/var/task/wrong.ps1" -Expected "/var/task/handler.ps1" } | Should -Throw -ExpectedMessage "*Expected path '/var/task/handler.ps1' but got '/var/task/wrong.ps1'*"
+        }
+
+        It "Should show normalization details only when actual path was normalized" {
+            { Assert-PathEquals -Actual "C:\var\task\handler.ps1" -Expected "C:/var/task/different.ps1" } | Should -Throw -ExpectedMessage "*normalized: 'C:/var/task/different.ps1' vs 'C:/var/task/handler.ps1'*"
+        }
+    }
+
+    Context "When testing verbose output" {
+        It "Should write verbose message on successful assertion" {
+            Mock Write-Verbose { }
+
+            Assert-PathEquals -Actual "/var/task/handler.ps1" -Expected "/var/task/handler.ps1" -Verbose
+
+            Should -Invoke Write-Verbose -Exactly 1 -ParameterFilter { $Message -like "*Path assertion passed*" }
+        }
+
+        It "Should write verbose message with both paths" {
+            Mock Write-Verbose { }
+
+            # This should pass since the paths are equivalent after normalization
+            Assert-PathEquals -Actual "C:\var\task\handler.ps1" -Expected "C:/var/task/handler.ps1" -Verbose
+
+            Should -Invoke Write-Verbose -Exactly 1 -ParameterFilter {
+                $Message -like "*'C:/var/task/handler.ps1' matches 'C:\var\task\handler.ps1'*"
+            }
+        }
+    }
+}
