@@ -24,7 +24,7 @@ function private:Import-ModuleArchive {
         $(Join-Path $env:LAMBDA_TASK_ROOT -ChildPath "modules.zip")
     )
 
-    If ($SearchPaths | ? { Test-Path $_ }) {
+    If ($SearchPaths | Where-Object { Test-Path $_ }) {
         $UnpackDirectory = '/tmp/powershell-custom-runtime-unpacked-modules/combined/'
         if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host '[RUNTIME-Import-ModuleArchive]Creating unpack directory for combined module archives' }
         New-Item -ItemType Directory -Path $UnpackDirectory -Force
