@@ -24,26 +24,26 @@ function private:Import-ModulePackage {
 
     If ($SearchPaths.Values | ? { Test-Path $_ }) {
         $UnpackDirectory = '/tmp/powershell-custom-runtime-unpacked-modules/nupkgs/'
-        if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host '[RUNTIME-bootstrap]Creating unpack directory for individual module packages' }
+        if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host '[RUNTIME-Import-ModulePackage]Creating unpack directory for individual module packages' }
         New-Item -ItemType Directory -Path $UnpackDirectory -Force
         $SearchPaths.GetEnumerator() | ? { Test-Path $_.Value } | ForEach-Object {
             $PackageDirectory = Split-Path $_.Value -Parent
-            if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host "[RUNTIME-bootstrap]Importing module packages from $PackageDirectory" }
+            if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host "[RUNTIME-Import-ModulePackage]Importing module packages from $PackageDirectory" }
             $RepositoryName = "Lambda-Local-$($_.Key)"
-            if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host "[RUNTIME-bootstrap]Registering local package repository $RepositoryName" }
+            if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host "[RUNTIME-Import-ModulePackage]Registering local package repository $RepositoryName" }
             Register-PSResourceRepository -Name $RepositoryName -Uri $PackageDirectory -Trusted -Priority 1
-            if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host "[RUNTIME-bootstrap]Enumerating packages in $PackageDirectory (PSResource repository $RepositoryName)" }
+            if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host "[RUNTIME-Import-ModulePackage]Enumerating packages in $PackageDirectory (PSResource repository $RepositoryName)" }
             Find-PSResource -Name * -Repository $RepositoryName | ForEach-Object -Parallel {
-                if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host "[RUNTIME-bootstrap]Saving package $($_.Name) version $($_.Version) (PSResource repository $($using:RepositoryName))" }
+                if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host "[RUNTIME-Import-ModulePackage]Saving package $($_.Name) version $($_.Version) (PSResource repository $($using:RepositoryName))" }
                 $_ | Save-PSResource -SkipDependencyCheck -Path $using:PackageDirectory -Quiet -AcceptLicense -Confirm:$false
             }
-            if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host "[RUNTIME-bootstrap]Registering local package repository $RepositoryName" }
+            if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host "[RUNTIME-Import-ModulePackage]Registering local package repository $RepositoryName" }
             Unregister-PSResourceRepository -Name $RepositoryName -Confirm:$false
         }
-        if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host '[RUNTIME-bootstrap]Archive unpack complete' }
+        if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host '[RUNTIME-Import-ModulePackage]Archive unpack complete' }
     }
     else {
-        if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host '[RUNTIME-bootstrap]No module archives detected; nothing to do.' }
+        if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host '[RUNTIME-Import-ModulePackage]No module archives detected; nothing to do.' }
     }
 
 }

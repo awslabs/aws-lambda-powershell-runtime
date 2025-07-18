@@ -26,15 +26,15 @@ function private:Import-ModuleArchive {
 
     If ($SearchPaths | ? { Test-Path $_ }) {
         $UnpackDirectory = '/tmp/powershell-custom-runtime-unpacked-modules/combined/'
-        if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host '[RUNTIME-bootstrap]Creating unpack directory for combined module archives' }
+        if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host '[RUNTIME-Import-ModuleArchive]Creating unpack directory for combined module archives' }
         New-Item -ItemType Directory -Path $UnpackDirectory -Force
         $SearchPaths | ? { Test-Path $_ } | ForEach-Object {
-            if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host "[RUNTIME-bootstrap]Unpacking $_ to $UnpackDirectory" }
+            if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host "[RUNTIME-Import-ModuleArchive]Unpacking $_ to $UnpackDirectory" }
             Expand-Archive -LiteralPath $_ -DestinationPath $UnpackDirectory -Force
         }
-        if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host '[RUNTIME-bootstrap]Archive unpack complete' }
+        if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host '[RUNTIME-Import-ModuleArchive]Archive unpack complete' }
     }
     else {
-        if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host '[RUNTIME-bootstrap]No module archives detected; nothing to do.' }
+        if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host '[RUNTIME-Import-ModuleArchive]No module archives detected; nothing to do.' }
     }
 }
