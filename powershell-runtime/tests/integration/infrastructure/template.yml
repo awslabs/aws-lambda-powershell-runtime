@@ -1,0 +1,280 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  PowerShell Runtime Integration Test Resources
+
+  This template creates resources needed for integration testing of the PowerShell runtime:
+  - Lambda functions for all three handler types (Script, Function, Module)
+  - S3 bucket for test artifacts and deployment packages
+  - IAM roles with minimal required permissions
+  - CloudWatch Log Groups for Lambda function logging
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: "Environment Configuration"
+        Parameters:
+          - Environment
+      - Label:
+          default: "Runtime Configuration"
+        Parameters:
+          - PowerShellRuntimeLayerArn
+    ParameterLabels:
+      Environment:
+        default: "Environment Name"
+      PowerShellRuntimeLayerArn:
+        default: "PowerShell Runtime Layer ARN"
+
+# Global parameters
+Parameters:
+  Environment:
+    Type: String
+    Default: IntegrationTest
+    Description: Environment name for resource tagging
+    AllowedValues:
+      - IntegrationTest
+      - Development
+      - Production
+
+  PowerShellRuntimeLayerArn:
+    Type: String
+    Description: ARN of the PowerShell runtime layer
+    AllowedPattern: "^$|^arn:aws:lambda:[a-z0-9-]+:[0-9]{12}:layer:[a-zA-Z0-9-_]+:[0-9]+$"
+    ConstraintDescription: "Must be a valid Lambda layer ARN"
+
+# Global resource properties
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 512
+    Runtime: provided.al2023
+    Architectures:
+      - x86_64
+    Environment:
+      Variables:
+        POWERSHELL_RUNTIME_VERBOSE: "TRUE"
+        DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: "1"
+    Tags:
+      Environment: !Ref Environment
+      Purpose: PowerShellRuntimeIntegrationTest
+
+Resources:
+  # S3 bucket for test artifacts and deployment packages
+  IntegrationTestBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      LifecycleConfiguration:
+        Rules:
+          - Id: DeleteAfter7Days
+            Status: Enabled
+            ExpirationInDays: 7
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-integration-test-bucket"
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Purpose
+          Value: PowerShellRuntimeIntegrationTest
+
+  # IAM Role for Lambda execution with minimal permissions
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-lambda-execution-role"
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Purpose
+          Value: PowerShellRuntimeIntegrationTest
+
+  # Function Handler Lambda Function
+  FunctionHandlerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: PowerShell Function Handler Test Function
+      CodeUri: function/
+      Handler: test-function-handler.ps1::Invoke-TestFunction
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Layers:
+        - !Ref PowerShellRuntimeLayerArn
+      Tags:
+        HandlerType: Function
+        Name: !Sub "${AWS::StackName}-function-handler"
+
+  # Module Handler Lambda Function
+  ModuleHandlerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: PowerShell Module Handler Test Function
+      CodeUri: function/
+      Handler: Module::test-module-handler::Invoke-TestModuleHandler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Layers:
+        - !Ref PowerShellRuntimeLayerArn
+      Tags:
+        Name: !Sub "${AWS::StackName}-module-handler"
+        HandlerType: Module
+
+  # Script Handler Lambda Function
+  ScriptHandlerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: PowerShell Script Handler Test Function
+      CodeUri: function/
+      Handler: test-script-handler.ps1
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Layers:
+        - !Ref PowerShellRuntimeLayerArn
+      Tags:
+        Name: !Sub "${AWS::StackName}-script-handler"
+        HandlerType: Script
+
+  # Script Handler Lambda Function to test execution failures
+  ScriptHandlerFailingFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: PowerShell Script Handler Failing Test Function
+      CodeUri: function/
+      Handler: test-failing-script-handler.ps1
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Layers:
+        - !Ref PowerShellRuntimeLayerArn
+      Tags:
+        Name: !Sub "${AWS::StackName}-failing-script-handler"
+        HandlerType: Script
+
+  FunctionHandlerLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${FunctionHandlerFunction}"
+      RetentionInDays: 7
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-function-handler-logs"
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Purpose
+          Value: PowerShellRuntimeIntegrationTest
+        - Key: HandlerType
+          Value: Function
+
+  ModuleHandlerLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${ModuleHandlerFunction}"
+      RetentionInDays: 7
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-module-handler-logs"
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Purpose
+          Value: PowerShellRuntimeIntegrationTest
+        - Key: HandlerType
+          Value: Module
+
+  ScriptHandlerLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${ScriptHandlerFunction}"
+      RetentionInDays: 7
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Purpose
+          Value: PowerShellRuntimeIntegrationTest
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-script-handler-logs"
+        - Key: HandlerType
+          Value: Script
+
+  ScriptHandlerFailingLogGroup:
+    Type: AWS::Logs::LogGroup
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${ScriptHandlerFailingFunction}"
+      RetentionInDays: 7
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Purpose
+          Value: PowerShellRuntimeIntegrationTest
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-script-handler-failing-logs"
+        - Key: HandlerType
+          Value: Script
+
+# Stack outputs for integration tests
+Outputs:
+  FunctionHandlerFunctionArn:
+    Description: ARN of the Function Handler Lambda function
+    Value: !GetAtt FunctionHandlerFunction.Arn
+
+  ModuleHandlerFunctionArn:
+    Description: ARN of the Module Handler Lambda function
+    Value: !GetAtt ModuleHandlerFunction.Arn
+
+  ScriptHandlerFunctionArn:
+    Description: ARN of the Script Handler Lambda function
+    Value: !GetAtt ScriptHandlerFunction.Arn
+
+  ScriptHandlerFailingFunctionArn:
+    Description: ARN of the Script Handler Lambda function designed to fail
+    Value: !GetAtt ScriptHandlerFailingFunction.Arn
+
+  FunctionHandlerFunctionName:
+    Description: Name of the Function Handler Lambda function
+    Value: !Ref FunctionHandlerFunction
+
+  ModuleHandlerFunctionName:
+    Description: Name of the Module Handler Lambda function
+    Value: !Ref ModuleHandlerFunction
+
+  ScriptHandlerFunctionName:
+    Description: Name of the Script Handler Lambda function
+    Value: !Ref ScriptHandlerFunction
+
+  ScriptHandlerFailingFunctionName:
+    Description: Name of the Script Handler Lambda function designed to fail
+    Value: !Ref ScriptHandlerFailingFunction
+
+  IntegrationTestBucketName:
+    Description: Name of the S3 bucket for test artifacts
+    Value: !Ref IntegrationTestBucket
+
+  PowerShellRuntimeLayerArn:
+    Description: ARN of the PowerShell runtime layer
+    Value: !Ref PowerShellRuntimeLayerArn
+
+  LambdaExecutionRoleArn:
+    Description: ARN of the Lambda execution role
+    Value: !GetAtt LambdaExecutionRole.Arn

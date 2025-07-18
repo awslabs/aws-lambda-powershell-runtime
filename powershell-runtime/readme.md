@@ -1,12 +1,12 @@
-# PowerShell-runtime
+# PowerShell Runtime
 
 Contains the PowerShell custom runtime based on `provided.al2023` with deployment methods.
 
 Deploy the example [demo-runtime-layer-function](../examples/demo-runtime-layer-function/) to explore how the runtime and PowerShell function work.
 
-## Deploying the PowerShell custom runtime
+## Deploying the PowerShell Custom Runtime
 
-The recommended deployment method is AWS SAM, though other infrastructure-as-code tools are also supported.
+AWS SAM is the deployment method, though other infrastructure-as-code tools are also supported.
 
 ## AWS SAM
 
@@ -58,7 +58,7 @@ Enter a **Stack Name** such as `powershell-runtime` and accept the remaining ini
 
 ## Development and Testing
 
-See [tests/README.md](tests/README.md) for comprehensive testing documentation and commands.
+See [tests/README.md](tests/README.md) for testing documentation and commands.
 
 ## Powershell runtime information
 
@@ -121,7 +121,7 @@ The PowerShell runtime imports the specified `<module_name>`. This allows you to
 
 ### PowerShell module support
 
-You can include additional PowerShell modules either via a Lambda Layer, or within your function code package, or container image. Using Lambda layers provides a convenient way to package and share modules that you can use with your Lambda functions. Layers reduce the size of uploaded deployment archives and make it faster to deploy your code.
+You can include PowerShell modules via a Lambda Layer, within your function code package, or container image. Using Lambda layers provides a way to package and share modules that you can use with your Lambda functions. Layers reduce the size of uploaded deployment archives and make it faster to deploy your code.
 
 The `PSModulePath` environment variable contains a list of folder locations that are searched to find user-supplied modules. This is configured during the runtime initialization. Folders are specified in the following order:
 

@@ -106,7 +106,7 @@ namespace Amazon.Lambda.PowerShell.Internal
         {
             this.FunctionName = FunctionName;
             this.FunctionVersion = FunctionVersion;
-            this.InvokedFunctionArn = FunctionName;
+            this.InvokedFunctionArn = InvokedFunctionArn;
             this.MemoryLimitInMB = MemoryLimitInMB;
             this.AwsRequestId = AwsRequestId;
             this.LogGroupName = LogGroupName;
