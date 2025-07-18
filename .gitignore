@@ -128,3 +128,5 @@ invoke-result
 powershell-runtime/pwsh-runtime/powershell
 dev/
 layers/
+CodeCoverage.xml
+TestResults.xml

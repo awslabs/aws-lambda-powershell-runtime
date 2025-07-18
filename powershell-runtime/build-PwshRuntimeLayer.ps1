@@ -11,12 +11,15 @@ param (
     [string]$PwshArchitecture = 'x64',
 
     [ValidateNotNullOrEmpty()]
-    [string]$LayerPath = ([System.IO.Path]::Combine($PSScriptRoot, 'layers', 'runtimeLayer'))
+    [string]$LayerPath = ([System.IO.Path]::Combine($PSScriptRoot, 'layers', 'runtimeLayer')),
+
+    # Skip downloading PowerShell runtime (useful for unit testing)
+    [switch]$SkipRuntimeSetup
 )
 
 function Log {
     param (
-        [Parameter(Position=0)]
+        [Parameter(Position = 0)]
         $Message,
         $ForegroundColor = 'Green'
     )
@@ -45,34 +48,73 @@ $modulePath = Join-Path -Path $LayerPath -ChildPath 'modules'
 $moduleFilePath = Join-Path -Path $modulePath -ChildPath 'pwsh-runtime.psm1'
 $privateFunctionPath = Join-Path -Path $modulePath -ChildPath 'Private'
 
-$powershellPath = Join-Path -Path $LayerPath -ChildPath 'powershell'
-$tarFile = Join-Path -Path $LayerPath -ChildPath "powershell-$PwshVersion-$PwshArchitecture.tar.gz"
+if (-not $SkipRuntimeSetup) {
+    $powershellPath = Join-Path -Path $LayerPath -ChildPath 'powershell'
+    $tarFile = Join-Path -Path $LayerPath -ChildPath "powershell-$PwshVersion-$PwshArchitecture.tar.gz"
 
-$githubSource = "https://github.com/PowerShell/PowerShell/releases/download/v$PwshVersion/powershell-$PwshVersion-linux-$PwshArchitecture.tar.gz"
-Log "Downloading the PowerShell runtime from '$githubSource'."
-Invoke-WebRequest -Uri $githubSource -OutFile $tarFile
+    $githubSource = "https://github.com/PowerShell/PowerShell/releases/download/v$PwshVersion/powershell-$PwshVersion-linux-$PwshArchitecture.tar.gz"
+    Log "Downloading the PowerShell runtime from '$githubSource'."
+    Invoke-WebRequest -Uri $githubSource -OutFile $tarFile
 
-Log "Extracting the PowerShell runtime to '$powershellPath'."
-if (-not(Test-Path -Path $powershellPath)) {$null = New-Item -ItemType Directory -Force -Path $powershellPath}
-tar zxf $tarFile -C $powershellPath
-Remove-Item -Path $tarFile -Force
-
-Log 'Copying additional runtime files, including bootstrap.'
-if (-not(Select-String -Path $moduleFilePath -Pattern 'private:Get-Handler')) {
-    Get-ChildItem -Path $privateFunctionPath -Filter '*.ps1' | ForEach-Object {
-        Get-Content $_.FullName | Select-Object -Skip 2 | Out-File -FilePath $moduleFilePath -Append -Encoding ascii
-    }
-    Remove-Item -Path $privateFunctionPath -Force -Recurse
-} else {
-    Log 'Private modules likely merged already, skipping.'
+    Log "Extracting the PowerShell runtime to '$powershellPath'."
+    if (-not(Test-Path -Path $powershellPath)) { $null = New-Item -ItemType Directory -Force -Path $powershellPath }
+    tar zxf $tarFile -C $powershellPath
+    Remove-Item -Path $tarFile -Force
 }
+else {
+    Log 'Skipping PowerShell runtime download (SkipRuntimeSetup specified).' -ForegroundColor 'Cyan'
+}
+
+Log 'Merging private functions into the module.'
+
+# Always perform the merge operation - get the base module content
+$moduleContent = Get-Content -Path $moduleFilePath -Raw
+
+# Remove development-only code from the base module
+$exclusionMarker = '##### All code below this comment is excluded from the build process'
+$markerIndex = $moduleContent.IndexOf($exclusionMarker)
+if ($markerIndex -ge 0) {
+    $cleanedContent = $moduleContent.Substring(0, $markerIndex).TrimEnd()
+    Log 'Removed development-only code from base module.'
+}
+else {
+    $cleanedContent = $moduleContent
+    Log 'Build exclusion marker not found - using full module content.' -ForegroundColor 'Yellow'
+}
+
+# Collect all private function content
+$privateFunctionContent = @()
+$privateFunctionContent += "`n# Private functions merged from Private directory during build process"
+
+Get-ChildItem -Path $privateFunctionPath -Filter '*.ps1' | Sort-Object Name | ForEach-Object {
+    Log "Merging private function: $($_.Name)"
+    $functionContent = Get-Content $_.FullName | Select-Object -Skip 2  # Skip copyright header
+    $privateFunctionContent += "`n# === $($_.Name) ==="
+    $privateFunctionContent += $functionContent
+    $privateFunctionContent += ""  # Add blank line between functions
+}
+
+# Combine base module content with private functions
+$finalContent = $cleanedContent + "`n" + ($privateFunctionContent -join "`n")
+
+# Write the merged content to the module file
+Set-Content -Path $moduleFilePath -Value $finalContent -Encoding ascii
+
+# Remove the Private directory since functions are now merged
+Remove-Item -Path $privateFunctionPath -Force -Recurse
+Log 'Successfully merged all private functions into the module.'
 
 Log 'Removing the Makefile from the layer path.'
 Remove-Item -Path (Join-Path -Path $LayerPath -ChildPath 'Makefile') -ErrorAction SilentlyContinue
 
-Log 'Updating the SAM template ContentUri.'
-$samTemplatePath = Join-Path -Path $PSScriptRoot -ChildPath 'template.yml'
-(Get-Content -Path $samTemplatePath -Raw).replace(
-    'ContentUri: ./source', 'ContentUri: ./layers/runtimeLayer') | Set-Content -Path $samTemplatePath -Encoding ascii
+if (-not $SkipRuntimeSetup) {
+    Log 'Updating the SAM template ContentUri.'
+    $samTemplatePath = Join-Path -Path $PSScriptRoot -ChildPath 'template.yml'
+    (Get-Content -Path $samTemplatePath -Raw).replace(
+        'ContentUri: ./source', 'ContentUri: ./layers/runtimeLayer') | Set-Content -Path $samTemplatePath -Encoding ascii
+}
+else {
+    Log 'Skipping SAM template update (SkipRuntimeSetup specified).' -ForegroundColor 'Cyan'
+}
 
 Log 'Finished building the PowerShell Runtime layer.' -ForegroundColor 'Yellow'
