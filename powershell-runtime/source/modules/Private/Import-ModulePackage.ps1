@@ -24,7 +24,7 @@ function private:Import-ModulePackage {
 
     If ($SearchPaths.Values | ? { Test-Path $_ }) {
         if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host '[RUNTIME-Import-ModulePackage]Creating unpack directory for individual module packages' }
-        New-Item -ItemType Directory -Path $Script:ModulePaths.Unpacked.NuPkg -Force
+        [System.IO.Directory]::CreateDirectory($Script:ModulePaths.Unpacked.NuPkg)
         $SearchPaths.GetEnumerator() | ? { Test-Path $_.Value } | ForEach-Object {
             $PackageDirectory = Split-Path $_.Value -Parent
             if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host "[RUNTIME-Import-ModulePackage]Importing module packages from $PackageDirectory" }

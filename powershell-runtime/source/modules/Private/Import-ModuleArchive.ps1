@@ -23,7 +23,7 @@ function private:Import-ModuleArchive {
 
     If ($SearchPaths | Where-Object { Test-Path $_ }) {
         if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host '[RUNTIME-Import-ModuleArchive]Creating unpack directory for combined module archives' }
-        $null = New-Item -ItemType Directory -Path $Script:ModulePaths.Unpacked.Combined -Force
+        $null = [System.IO.Directory]::CreateDirectory($Script:ModulePaths.Unpacked.Combined)
         $SearchPaths | ? { Test-Path $_ } | ForEach-Object {
             if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host "[RUNTIME-Import-ModuleArchive]Unpacking $_ to $UnpackDirectory" }
             Expand-Archive -LiteralPath $_ -DestinationPath $UnpackDirectory -Force
