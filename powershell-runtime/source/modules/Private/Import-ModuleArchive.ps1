@@ -25,9 +25,8 @@ function private:Import-ModuleArchive {
     )
 
     If ($SearchPaths | Where-Object { Test-Path $_ }) {
-        $UnpackDirectory = '/tmp/powershell-custom-runtime-unpacked-modules/combined/'
         if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host '[RUNTIME-Import-ModuleArchive]Creating unpack directory for combined module archives' }
-        $null = New-Item -ItemType Directory -Path $UnpackDirectory -Force
+        $null = New-Item -ItemType Directory -Path $Script:ModulePaths.Unpacked.Combined -Force
         $SearchPaths | ? { Test-Path $_ } | ForEach-Object {
             if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host "[RUNTIME-Import-ModuleArchive]Unpacking $_ to $UnpackDirectory" }
             Expand-Archive -LiteralPath $_ -DestinationPath $UnpackDirectory -Force
