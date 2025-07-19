@@ -17,29 +17,47 @@ function private:Import-ModulePackage {
         * /opt/module-nupkgs/ (Combined Lambda layer directory)
         * $Env:LAMBDA_TASK_ROOT/module-nupkgs/ (Lambda Function Package deployment directory)
     #>
-    $SearchPaths = $Script:ModulePaths.Packed.NuPkg
+    [CmdletBinding()]
+    param(
+        [ValidatePattern(".nupkg$")]
+        [ValidateNotNullOrEmpty()]
+        [Parameter(
+            Mandatory,
+            Position = 0
+        )]
+        [System.IO.FileInfo[]]$PackagePath
+    )
 
-    If ($SearchPaths.Values | Where-Object { Test-Path $_ }) {
+    Begin {
         if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host '[RUNTIME-Import-ModulePackage]Creating unpack directory for individual module packages' }
-        [System.IO.Directory]::CreateDirectory($Script:ModulePaths.Unpacked.NuPkg)
-        $SearchPaths.GetEnumerator() | Where-Object { Test-Path $_.Value } | ForEach-Object {
-            $PackageDirectory = Split-Path $_.Value -Parent
+        $UnpackDirectory = [System.IO.Directory]::CreateDirectory($Script:ModulePaths.Unpacked.NuPkg)
+    }
+
+    Process {
+        $PackagePath | Group-Object -Property Directory | ForEach-Object {
+
+            # The group key should be the directory for the folder containing the nupkgs.
+            $PackageDirectory = $_.Name
             if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host "[RUNTIME-Import-ModulePackage]Importing module packages from $PackageDirectory" }
-            $RepositoryName = "Lambda-Local-$($_.Key)"
+
+            # We split-path that directory to strip off "module-nupkgs".
+            $RepositoryName = "Lambda-Local-$($_.Group | Split-Path -Parent)"
+
+            # Attach a PSResourceGet repository to the directory holding the packages.
             if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host "[RUNTIME-Import-ModulePackage]Registering local package repository $RepositoryName" }
             Register-PSResourceRepository -Name $RepositoryName -Uri $PackageDirectory -Trusted -Priority 1
+
+            # Then, enumerate all the packages in that repository (again, just a directory) and "save" (install/unpack them) into /tmp.
             if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host "[RUNTIME-Import-ModulePackage]Enumerating packages in $PackageDirectory (PSResource repository $RepositoryName)" }
             Find-PSResource -Name * -Repository $RepositoryName | ForEach-Object -Parallel {
                 if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host "[RUNTIME-Import-ModulePackage]Saving package $($_.Name) version $($_.Version) (PSResource repository $($using:RepositoryName))" }
-                $_ | Save-PSResource -SkipDependencyCheck -Path $using:PackageDirectory -Quiet -AcceptLicense -Confirm:$false
+                $_ | Save-PSResource -SkipDependencyCheck -Path $using:UnpackDirectory -Quiet -AcceptLicense -Confirm:$false
             }
+
+            # Clean up the local repository config. This doesn't uninstall anything (just edits some XML files in PSResourceGet)
             if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host "[RUNTIME-Import-ModulePackage]Registering local package repository $RepositoryName" }
             Unregister-PSResourceRepository -Name $RepositoryName -Confirm:$false
         }
         if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host '[RUNTIME-Import-ModulePackage]Archive unpack complete' }
     }
-    else {
-        if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host '[RUNTIME-Import-ModulePackage]No module archives detected; nothing to do.' }
-    }
-
 }

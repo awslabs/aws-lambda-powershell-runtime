@@ -18,19 +18,27 @@ function private:Import-ModuleArchive {
 
         If archives are detected at both locations, they will be extracted over the top of each-other.
     #>
+    [CmdletBinding()]
+    param(
+        [ValidatePattern(".zip$")]
+        [ValidateNotNullOrEmpty()]
+        [Parameter(
+            Mandatory,
+            Position = 0
+        )]
+        [System.IO.FileInfo[]]$ArchivePath
+    )
 
-    $SearchPaths = $Script:ModulePaths.Packed.Combined.Values
-
-    If ($SearchPaths| Where-Object { Test-Path $_ }) {
+    Begin {
         if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host '[RUNTIME-Import-ModuleArchive]Creating unpack directory for combined module archives' }
-        $null = [System.IO.Directory]::CreateDirectory($Script:ModulePaths.Unpacked.Combined)
-        $SearchPaths | Where-Object { Test-Path $_ } | ForEach-Object {
+        $UnpackDirectory = [System.IO.Directory]::CreateDirectory($Script:ModulePaths.Unpacked.Combined)
+    }
+
+    Process {
+        $ArchivePath | ForEach-Object {
             if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host "[RUNTIME-Import-ModuleArchive]Unpacking $_ to $UnpackDirectory" }
             Expand-Archive -LiteralPath $_ -DestinationPath $UnpackDirectory -Force
         }
         if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host '[RUNTIME-Import-ModuleArchive]Archive unpack complete' }
-    }
-    else {
-        if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host '[RUNTIME-Import-ModuleArchive]No module archives detected; nothing to do.' }
     }
 }

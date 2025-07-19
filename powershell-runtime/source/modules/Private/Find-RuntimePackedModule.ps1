@@ -1,9 +1,9 @@
 function private:Find-RuntimePackedModule {
     <#
     .SYNOPSIS
-        Tests whether the current runtime environment contains compressed module packages (combined .zip or per-module .nupkg)
+        Searches runtime environment filesystem for compressed module packages (combined .zip or per-module .nupkg)
     .DESCRIPTION
-        Tests whether the current runtime environment contains compressed module packages (combined .zip or per-module .nupkg)
+        Searches the current runtime environment's filesystem for compressed module packages (combined .zip or per-module .nupkg). Any resolved paths are returned in a dictionary. If nothing is found, no object is returned.
     .NOTES
         Looks for module packages in two locations:
             * /opt/ (Combined Lambda layer directory)
@@ -24,56 +24,34 @@ function private:Find-RuntimePackedModule {
         * /opt/module-nupkgs/AWS.Tools.Common.4.1.833.nupkg
         * /var/lambda/module-nupkgs/AWS.Tools.Common.4.1.833.nupkg
     .EXAMPLE
-        Test-MyTestFunction -Verbose
-        Explanation of the function or its result. You can include multiple examples with additional .EXAMPLE lines
+        PS> Find-RuntimePackedModule
+        Name                           Value
+        ----                           -----
+        Combined                       {/opt/modules.zip}
+        NuPkg                          {/var/lambda/module-nupkgs/AWS.Tools.Common.4.1.833.nupkg, /var/lambda/module-nupkgs/AWS.Tools.S3.4.1.833.nupkg}
     #>
 
     [CmdletBinding()]
     param(
-        # Looks for combined module archives (modules.zip).
-        [Parameter(
-            Mandatory,
-            ParameterSetName="Combined"
-        )]
-        [Switch]
-        $Combined,
-
-        # Looks for individual module packages (*.nupkg).
-        [Parameter(
-            Mandatory,
-            ParameterSetName="NuPkg"
-        )]
-        [Switch]
-        $NuPkg
     )
 
-    $BaseDirectories = @(
-        "/opt",
-        $Env:LAMBDA_TASK_ROOT
-    )
+    if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host "[RUNTIME-Test-RuntimePackedModule]Searching for packed modules" }
 
-    switch ($PSCmdlet.ParameterSetName) {
-        "Combined" {
-
-            if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host "[RUNTIME-Test-RuntimePackedModule]Searching for combined module archives" }
-
-            $BaseDirectories | Join-Path -ChildPath "modules.zip" | Get-Item -ErrorAction SilentlyContinue | Set-Variable FoundItems
-
-        }
-        "NuPkg" {
-
-            if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host "[RUNTIME-Test-RuntimePackedModule]Searching for individual module packages" }
-
-            $BaseDirectories | Join-Path -ChildPath "module-nupkgs" -AdditionalChildPath "*.nupkg" | Get-Item -ErrorAction SilentlyContinue | Set-Variable FoundItems
-
-        }
+    $ResolvedModules = @{
+        Combined = $(
+            $Script:ModulePaths.Packed.Combined.Values | Get-Item -ErrorAction SilentlyContinue
+        )
+        NuPkg = $(
+            $Script:ModulePaths.Packed.NuPkg.Values | Get-Item -ErrorAction SilentlyContinue
+        )
     }
 
-    If ($FoundItems) {
-        if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host "[RUNTIME-Test-RuntimePackedModule]Found $($FoundItems | Measure-Object | % Count) match(es)" }
-        return $true
-    } else {
-        if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host "[RUNTIME-Test-RuntimePackedModule]No matches found" }
-        return $false
+
+    if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host "[RUNTIME-Test-RuntimePackedModule]Found $($ResolvedModules.Combined | Measure-Object | ForEach-Object Count) combined module archive(s)" }
+    if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host "[RUNTIME-Test-RuntimePackedModule]Found $($ResolvedModules.NuPkg | Measure-Object | ForEach-Object Count) individual module package(s)" }
+
+    # Only return a value if we found either combined or NuPkg module packages
+    If ($ResolvedModules.Combined -or $ResolvedModules.NuPkg) {
+        return $ResolvedModules
     }
 }

@@ -19,20 +19,19 @@ if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host '[RUNTIME-bootstrap
 Add-Type -TypeDefinition ([System.IO.File]::ReadAllText('/opt/PowerShellLambdaContext.cs'))
 
 # Unpack compressed modules, if present
+$ResolvedModules = Find-RuntimePackedModule
 
-# Combined
-If (Test-RuntimePackedModule -Combined) {
+If ($ResolvedModules.Combined) {
     if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host '[RUNTIME-bootstrap]Unpacking combined module archives'}
-    Import-ModuleArchive
+    Import-ModuleArchive -ArchivePath $ResolvedModules.Combined
     if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host '[RUNTIME-bootstrap]Finished unpacking archives'}
-
 }
-# NuPkg
-If (Test-RuntimePackedModule -NuPkg) {
+If ($ResolvedModules.NuPkg) {
     if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host '[RUNTIME-bootstrap]Unpacking module NuGet packages'}
-    Import-ModulePackage
+    Import-ModulePackage -PackagePath $ResolvedModules.NuPkg
     if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host '[RUNTIME-bootstrap]Finished unpacking NuGet packages'}
 }
+
 
 # Modify $env:PSModulePath to support Lambda paths
 if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host '[RUNTIME-bootstrap]Modify PSModulePath to support Lambda paths'}
