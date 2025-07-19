@@ -19,10 +19,10 @@ function private:Import-ModulePackage {
     #>
     $SearchPaths = $Script:ModulePaths.Packed.NuPkg
 
-    If ($SearchPaths.Values | ? { Test-Path $_ }) {
+    If ($SearchPaths.Values | Where-Object { Test-Path $_ }) {
         if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host '[RUNTIME-Import-ModulePackage]Creating unpack directory for individual module packages' }
         [System.IO.Directory]::CreateDirectory($Script:ModulePaths.Unpacked.NuPkg)
-        $SearchPaths.GetEnumerator() | ? { Test-Path $_.Value } | ForEach-Object {
+        $SearchPaths.GetEnumerator() | Where-Object { Test-Path $_.Value } | ForEach-Object {
             $PackageDirectory = Split-Path $_.Value -Parent
             if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host "[RUNTIME-Import-ModulePackage]Importing module packages from $PackageDirectory" }
             $RepositoryName = "Lambda-Local-$($_.Key)"
