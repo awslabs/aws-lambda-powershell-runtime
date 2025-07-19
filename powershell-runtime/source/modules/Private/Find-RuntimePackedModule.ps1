@@ -1,4 +1,4 @@
-function private:Test-RuntimePackedModule {
+function private:Find-RuntimePackedModule {
     <#
     .SYNOPSIS
         Tests whether the current runtime environment contains compressed module packages (combined .zip or per-module .nupkg)
