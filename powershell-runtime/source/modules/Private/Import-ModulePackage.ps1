@@ -17,10 +17,7 @@ function private:Import-ModulePackage {
         * /opt/module-nupkgs/ (Combined Lambda layer directory)
         * $Env:LAMBDA_TASK_ROOT/module-nupkgs/ (Lambda Function Package deployment directory)
     #>
-    $SearchPaths = @{
-        Layer = "/opt/module-nupkgs/*.nupkg"
-        Root = (Join-Path $env:LAMBDA_TASK_ROOT -ChildPath "module-nupkgs" -AdditionalChildPath "*.nupkg")
-    }
+    $SearchPaths = $Script:ModulePaths.Packed.NuPkg
 
     If ($SearchPaths.Values | ? { Test-Path $_ }) {
         if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host '[RUNTIME-Import-ModulePackage]Creating unpack directory for individual module packages' }

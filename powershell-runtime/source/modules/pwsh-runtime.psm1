@@ -5,14 +5,14 @@ Set-PSDebug -Strict
 
 $Script:ModulePaths = @{
     Packed = @{
-        Combined = @(
-            "/opt/modules.zip"
-            "$Env:LAMBDA_TASK_ROOT/modules.zip"
-        )
-        NuPkg = @(
-            "/opt/module-nupkgs/*.nupkg"
-            "$Env:LAMBDA_TASK_ROOT/module-nupkgs/*.nupkg"
-        )
+        Combined = @{
+            Layer = "/opt/modules.zip"
+            Root = "$Env:LAMBDA_TASK_ROOT/modules.zip"
+        }
+        NuPkg = @{
+            Layer = "/opt/module-nupkgs/*.nupkg"
+            Root = "$Env:LAMBDA_TASK_ROOT/module-nupkgs/*.nupkg"
+        }
     }
     Unpacked = @{
         Combined = '/tmp/powershell-custom-runtime-unpacked-modules/combined'
