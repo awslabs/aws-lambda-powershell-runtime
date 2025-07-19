@@ -18,6 +18,21 @@ Import-Module '/opt/modules/pwsh-runtime.psd1'
 if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') { Write-Host '[RUNTIME-bootstrap]Importing .NET class from .cs file to support script properties and method' }
 Add-Type -TypeDefinition ([System.IO.File]::ReadAllText('/opt/PowerShellLambdaContext.cs'))
 
+# Unpack compressed modules, if present
+$ResolvedModules = Find-RuntimePackedModule
+
+If ($ResolvedModules.Combined) {
+    if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host '[RUNTIME-bootstrap]Unpacking combined module archives'}
+    Import-ModuleArchive -ArchivePath $ResolvedModules.Combined
+    if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host '[RUNTIME-bootstrap]Finished unpacking archives'}
+}
+If ($ResolvedModules.NuPkg) {
+    if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host '[RUNTIME-bootstrap]Unpacking module NuGet packages'}
+    Import-ModulePackage -PackagePath $ResolvedModules.NuPkg
+    if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host '[RUNTIME-bootstrap]Finished unpacking NuGet packages'}
+}
+
+
 # Modify $env:PSModulePath to support Lambda paths
 if ($env:POWERSHELL_RUNTIME_VERBOSE -eq 'TRUE') {Write-Host '[RUNTIME-bootstrap]Modify PSModulePath to support Lambda paths'}
 Set-PSModulePath
